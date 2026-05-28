@@ -1,0 +1,98 @@
+version: "3.9"
+
+services:
+  cm_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cm-api
+    restart: unless-stopped
+    working_dir: /app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    expose:
+      - "8000"
+    labels:
+      caddy: tstapicm.one9.co
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+    networks:
+      - webnet
+      - appnet
+    volumes:
+      - ./app/static:/app/app/static
+      
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backup:/backup
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - appnet
+    command:
+      - "--default-authentication-plugin=mysql_native_password"
+      - "--max_connections=100"
+      - "--innodb_buffer_pool_size=256M"
+      - "--performance_schema=0"
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" -e 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+  
+  mysql-backup:
+    build:
+      context: ./mysql-backup
+      dockerfile: Dockerfile
+    container_name: mysql-backup
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      BACKUP_DIR: /backup
+      RETENTION_DAYS: 7
+      COMPRESS: "true"
+      TZ: ${TZ}
+
+      #backup image
+      IMAGE_BACKUP_DIR: /backup/images
+      IMAGE_SOURCE_DIR: /app/app/static
+      IMAGE_RETENTION_DAYS: 7
+    volumes:
+      - backup_data:/backup
+      - ./backup-logs:/var/log
+      - ./app/static:/app/app/static:ro #read only
+    networks:
+      - appnet
+volumes:
+  mysql_data:
+    driver: local
+  backup_data:
+    driver: local
+    
+networks:
+  webnet:
+    external: true
+  appnet:
+    driver: bridge

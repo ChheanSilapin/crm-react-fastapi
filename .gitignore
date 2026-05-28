@@ -30,7 +30,6 @@
 **/*.local
 **/*.backup
 **/api-docs/*
-**/CRM_project/
 **/react_jwt_auth/
 
 
