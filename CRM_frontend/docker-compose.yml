@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  cm_web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cm-web
+    restart: unless-stopped
+    labels:
+      caddy: tst.one9.co
+      caddy.reverse_proxy: "{{upstreams 80}}"
+    networks:
+      - webnet
+      - appnet
+
+networks:
+  webnet:
+    external: true
+  appnet:
+    driver: bridge
