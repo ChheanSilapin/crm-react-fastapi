@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.models.role import Role
 
-from app.api.deps import get_db, check_permissions
+from app.database import get_db
+from app.core.dependencies import require_permissions, require_role, get_current_user
 from app.services import RoleService
 from app.models.permission import Permission
 from app.schemas.auth import RoleCreate, RoleUpdate, RoleOut, PermissionOut, RolePermissionAssignment
@@ -14,7 +15,7 @@ router = APIRouter()
 @router.get("/roles", response_model=List[RoleOut])
 def list_roles(
     db: Session = Depends(get_db),
-    _: bool = Depends(check_permissions(["roles:read"])),
+    _: bool = Depends(require_permissions(["roles:read"])),
 ) -> List[RoleOut]:
     """List all roles. Requires roles:read permission."""
     roles = RoleService.get_all(db)
@@ -25,7 +26,7 @@ def list_roles(
 def get_role(
     role_id: int,
     db: Session = Depends(get_db),
-    _: bool = Depends(check_permissions(["roles:read"])),
+    _: bool = Depends(require_permissions(["roles:read"])),
 ) -> RoleOut:
     """Get specific role by ID. Requires roles:read permission."""
     role = db.query(Role).filter(Role.id == role_id).first()
@@ -66,7 +67,7 @@ def get_role(
 def create_role(
     role_data: RoleCreate,
     db: Session = Depends(get_db),
-    _: bool = Depends(check_permissions(["roles:create"])),
+    _: bool = Depends(require_permissions(["roles:create"])),
 ) -> RoleOut:
     """
     Create a new role.
@@ -135,7 +136,7 @@ def update_role(
     role_id: int,
     role_data: RoleUpdate,
     db: Session = Depends(get_db),
-    _: bool = Depends(check_permissions(["roles:update"])),
+    _: bool = Depends(require_permissions(["roles:update"])),
 ) -> RoleOut:
     """
     Update an existing role.
@@ -186,7 +187,7 @@ def update_role(
 def delete_role(
     role_id: int,
     db: Session = Depends(get_db),
-    _: bool = Depends(check_permissions(["roles:delete"])),
+    _: bool = Depends(require_permissions(["roles:delete"])),
 ):
     """Delete role. Requires roles:delete permission."""
     role = RoleService.get_by_id(db, role_id)
@@ -239,7 +240,7 @@ def assign_permissions_to_role(
     role_id: int,
     permission_data: RolePermissionAssignment,
     db: Session = Depends(get_db),
-    _: bool = Depends(check_permissions(["roles:create"])),
+    _: bool = Depends(require_permissions(["roles:create"])),
 ):
     """
     Assign permissions to a role.
@@ -288,7 +289,7 @@ def assign_permissions_to_role(
 def get_role_users(
     role_id: int,
     db: Session = Depends(get_db),
-    _: bool = Depends(check_permissions(["roles:read"])),
+    _: bool = Depends(require_permissions(["roles:read"])),
 ):
     """Get all users assigned to a specific role. Requires roles:read permission."""
     role = db.query(Role).filter(Role.id == role_id).first()

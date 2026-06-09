@@ -4,7 +4,7 @@ import urllib.parse
 from .core.config import settings
 
 # SQLAlchemy setup
-engine_kwargs = {"echo": True, "pool_pre_ping": True}
+engine_kwargs = {"echo": False, "pool_pre_ping": True}
 
 if settings.DB_TYPE == "sqlite":
     DATABASE_URL = f"sqlite:///./{settings.DB_NAME}.db"

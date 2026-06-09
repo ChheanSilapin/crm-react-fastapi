@@ -2,7 +2,8 @@
 from typing import Any, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from app.api.deps import get_db, require_admin, get_current_user
+from app.database import get_db
+from app.core.dependencies import require_permissions, require_role, get_current_user
 from app.services import RoleService, RoleHierarchyService
 from app.models.user import User
 from app.schemas.role_hierarchy import (
@@ -22,7 +23,7 @@ router = APIRouter()
 )
 async def get_role_hierarchy_tree(
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin)
+    _: bool = Depends(require_role("admin"))
 ) -> List[RoleTreeNode]:
     """
     Get the complete role hierarchy tree.
@@ -47,7 +48,7 @@ async def get_role_hierarchy_tree(
 async def get_role_hierarchy_info(
     role_id: int,
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin)
+    _: bool = Depends(require_role("admin"))
 ) -> RoleWithHierarchy:
     """
     Get detailed role information with hierarchy context.
@@ -84,7 +85,7 @@ async def create_role_with_hierarchy(
     role_data: RoleHierarchyCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-    _: bool = Depends(require_admin)
+    _: bool = Depends(require_role("admin"))
 ) -> RoleWithHierarchy:
     """
     Create a new role with optional parent role.
@@ -134,7 +135,7 @@ async def update_role_parent(
     update_data: RoleHierarchyUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-    _: bool = Depends(require_admin)
+    _: bool = Depends(require_role("admin"))
 ) -> RoleWithHierarchy:
     """
     Change the parent role of an existing role.
@@ -176,7 +177,7 @@ async def update_role_parent(
 async def find_roles_with_permission(
     permission_name: str,
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin)
+    _: bool = Depends(require_role("admin"))
 ) -> List[RolePermissionAnalysis]:
     """
     Find all roles that have a specific permission.
@@ -204,7 +205,7 @@ async def find_roles_with_permission(
 async def get_user_effective_permissions(
     user_id: int,
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin)
+    _: bool = Depends(require_role("admin"))
 ) -> EffectivePermissions:
     """
     Get all effective permissions for a user.
@@ -248,7 +249,7 @@ async def get_user_effective_permissions(
 )
 async def validate_hierarchy_integrity(
     db: Session = Depends(get_db),
-    _: bool = Depends(require_admin)
+    _: bool = Depends(require_role("admin"))
 ) -> HierarchyValidationResult:
     """
     Validate the integrity of the role hierarchy.
@@ -279,7 +280,7 @@ async def validate_hierarchy_integrity(
 async def fix_hierarchy_levels(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-    _: bool = Depends(require_admin)
+    _: bool = Depends(require_role("admin"))
 ) -> Any:
     """
     Fix incorrect hierarchy levels.

@@ -10,8 +10,8 @@ from .core.config import settings
 from .database import Base, engine
 from .middleware import SecurityHeadersMiddleware, InputValidationMiddleware, RequestSizeMiddleware, SecurityHeadersValidationMiddleware
 from .models import User, Role, Permission, TokenBlacklist  # noqa: F401 (ensure models are imported so tables are created)
-from .api.v1.auth import router as auth_router
-from .api.v1.users import router as users_router
+from .modules.auth import router as auth_router
+from .modules.user import router as users_router
 from .api.v1.roles import router as roles_router
 from .api.v1.permissions import router as permissions_router
 from .api.v1.role_hierarchy import router as role_hierarchy_router

@@ -171,19 +171,19 @@ class DatabaseSeeder:
         for user_data in users_data:
             try:
                 # Check if user already exists
-                existing = self.db.query(User).filter(User.user_name == user_data["user_name"]).first()
+                existing = self.db.query(User).filter(User.username == user_data["username"]).first()
                 if existing:
-                    print(f"   ⚠️  User '{user_data['user_name']}' already exists, skipping")
+                    print(f"   ⚠️  User '{user_data['username']}' already exists, skipping")
                     self.created_objects['users'].append(existing)
                     continue
                 
                 role = role_map.get(user_data["role_name"])
                 if not role:
-                    print(f"   ❌ Role '{user_data['role_name']}' not found for user '{user_data['user_name']}'")
+                    print(f"   ❌ Role '{user_data['role_name']}' not found for user '{user_data['username']}'")
                     continue
                 
                 user = User(
-                    user_name=user_data["user_name"],
+                    username=user_data["username"],
                     password_hash=user_data["password_hash"],
                     role_id=role.id,
                     status=user_data["status"]
@@ -192,7 +192,7 @@ class DatabaseSeeder:
                 self.created_objects['users'].append(user)
                 
             except IntegrityError as e:
-                print(f"   ❌ Error creating user '{user_data['user_name']}': {e}")
+                print(f"   ❌ Error creating user '{user_data['username']}': {e}")
                 self.db.rollback()
                 continue
         
@@ -204,7 +204,7 @@ class DatabaseSeeder:
         print("🏦 Seeding banks...")
         
         banks_data = DataFactory.generate_banks(15)
-        user_map = {u.user_name: u for u in self.created_objects['users']}
+        user_map = {u.username: u for u in self.created_objects['users']}
         
         for bank_data in banks_data:
             try:
@@ -239,11 +239,11 @@ class DatabaseSeeder:
         print("👥 Seeding customers...")
 
         bank_names = [b.bank_name for b in self.created_objects['banks']]
-        user_names = [u.user_name for u in self.created_objects['users']]
+        user_names = [u.username for u in self.created_objects['users']]
         customers_data = DataFactory.generate_customers(50, bank_names, user_names)
 
         bank_map = {b.bank_name: b for b in self.created_objects['banks']}
-        user_map = {u.user_name: u for u in self.created_objects['users']}
+        user_map = {u.username: u for u in self.created_objects['users']}
 
         for customer_data in customers_data:
             try:

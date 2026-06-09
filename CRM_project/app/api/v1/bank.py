@@ -14,7 +14,8 @@ from app.models.user import User
 from app.models.customers import Customer 
 from app.schemas.bank import BankCreate, BankUpdate, BankResponse,BankDeletionResponse
 from app.schemas.common import ErrorResponse, ListResponse,SuccessResponse
-from app.api.deps import get_db, check_permissions, get_current_user
+from app.database import get_db
+from app.core.dependencies import require_permissions, require_role, get_current_user
 
 common_responses = {
     401: {"model": ErrorResponse},
@@ -32,7 +33,7 @@ def create_bank(
     # Use File for the uploaded file
     logo: UploadFile = File(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(check_permissions(["banks:create"]))
+    current_user: User = Depends(require_permissions(["banks:create"]))
 ):
     """Creates a new bank with an optional logo upload."""
     
@@ -79,7 +80,7 @@ def list_banks(
     limit: int = 50,
     offset: int = 0,
     db: Session = Depends(get_db),
-    current_user: User = Depends(check_permissions(["banks:read"]))
+    current_user: User = Depends(require_permissions(["banks:read"]))
 ):
     
     total_count = db.query(Bank).count()
@@ -100,7 +101,7 @@ def update_bank(
     bank_id: int,
     payload: BankUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(check_permissions(["banks:update"]))
+    current_user: User = Depends(require_permissions(["banks:update"]))
 ):
     
     bank = db.query(Bank).filter(Bank.bank_id == bank_id).first()
@@ -139,7 +140,7 @@ def upload_bank_logo(
     bank_id: int,
     logo: UploadFile = File(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(check_permissions(["banks:update"]))
+    current_user: User = Depends(require_permissions(["banks:update"]))
 ):
     """Uploads and updates the logo for an existing bank."""
     
@@ -190,7 +191,7 @@ STATIC_DIR = Path(__file__).parent.parent / "static"
 def delete_bank(
     bank_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(check_permissions(["banks:delete"]))
+    current_user: User = Depends(require_permissions(["banks:delete"]))
 ):
    
     bank = db.query(Bank).filter(Bank.bank_id == bank_id).first()
