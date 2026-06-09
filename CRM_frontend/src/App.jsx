@@ -7,6 +7,7 @@ import DashBoard from './pages/Dashboard';
 import Banks from './pages/bank/Banks';
 import Login from './pages/Login';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import Customers from './pages/customer/Customers';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route element={<AppLayout />}>
               <Route index path="/" element={<DashBoard />} />
               <Route path="/banks" element={<Banks />} />
+              <Route path="/customers" element={<Customers />} />
             </Route>
           </Route>
 
