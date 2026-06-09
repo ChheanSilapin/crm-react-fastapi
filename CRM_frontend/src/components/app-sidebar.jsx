@@ -1,14 +1,16 @@
-import * as React from "react"
+import * as React from "react";
 import {
   GalleryVerticalEnd,
   Home,
   Users as UsersIcon,
   Landmark,
   Settings2,
-} from "lucide-react"
+  Lock,
+  ShieldUser,
+} from "lucide-react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +19,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
   user: {
@@ -30,7 +32,6 @@ const data = {
       title: "Dashboard",
       url: "/",
       icon: <Home className="size-4" />,
-      isActive: true,
     },
     {
       title: "Customers",
@@ -50,32 +51,37 @@ const data = {
         {
           title: "Roles",
           url: "/roles",
+          icon: <ShieldUser className="size-4" />,
         },
         {
           title: "Role Permissions",
           url: "/role-permissions",
+          icon: <Lock className="size-4" />,
         },
         {
           title: "Users",
           url: "/users",
+          icon: <UsersIcon className="size-4" />,
         },
       ],
     },
   ],
-}
+};
 
-import { useAuth } from "@/hooks/queries/useAuth"
+import { useAuth } from "@/hooks/queries/useAuth";
 
 export function AppSidebar({ ...props }) {
   const { data: userData, isLoading } = useAuth();
 
   // Format the backend data to match what NavUser expects
-  const currentUser = userData ? {
-    name: userData.username,
-    role: userData.role?.name || "User", 
-    roleDescription: userData.role?.description || "",
-    avatar: "/avatars/shadcn.jpg", 
-  } : data.user;
+  const currentUser = userData
+    ? {
+        name: userData.username,
+        role: userData.role?.name || "User",
+        roleDescription: userData.role?.description || "",
+        avatar: "/avatars/shadcn.jpg",
+      }
+    : data.user;
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -104,5 +110,5 @@ export function AppSidebar({ ...props }) {
         <NavUser user={currentUser} isLoading={isLoading} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

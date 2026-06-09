@@ -18,7 +18,10 @@ export const CustomerResponse = z.object({
             }),
             create_at: z.string(),
             update_at: z.string(),
-            create_by_user: z.number(),
+            created_by_user: z.object({
+                id: z.number(),
+                username: z.string(),
+            }),
         })
     ),
     total: z.number(),

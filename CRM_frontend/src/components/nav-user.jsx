@@ -16,11 +16,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar"
 import { ChevronsUpDownIcon, SparklesIcon, BadgeCheckIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
 
 import { Skeleton } from "@/components/ui/skeleton"
+import { useSidebar } from "@/contexts/SidebarContext"
 
 export function NavUser({
   user,

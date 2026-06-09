@@ -14,25 +14,30 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { ChevronRightIcon } from "lucide-react"
+import { NavLink, useLocation } from "react-router-dom";
 
 export function NavMain({
   items
 }) {
+  const location = useLocation();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
+          const isSubItemActive = item.items?.some(
+            (subItem) => location.pathname === subItem.url
+          );
           if (item.items && item.items.length > 0) {
             return (
               <Collapsible
                 key={item.title}
                 asChild
-                defaultOpen={item.isActive}
+                defaultOpen={isSubItemActive}
                 className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton tooltip={item.title}>
+                    <SidebarMenuButton tooltip={item.title} isActive={isSubItemActive}>
                       {item.icon}
                       <span>{item.title}</span>
                       <ChevronRightIcon
@@ -43,10 +48,11 @@ export function NavMain({
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild>
-                            <a href={subItem.url}>
+                          <SidebarMenuSubButton asChild isActive={location.pathname === subItem.url}>
+                            <NavLink to={subItem.url}>
+                              {subItem.icon}
                               <span>{subItem.title}</span>
-                            </a>
+                            </NavLink>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
@@ -59,11 +65,11 @@ export function NavMain({
 
           return (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title} isActive={item.isActive}>
-                <a href={item.url}>
+              <SidebarMenuButton asChild tooltip={item.title} isActive={location.pathname === item.url}>
+                <NavLink to={item.url}>
                   {item.icon}
                   <span>{item.title}</span>
-                </a>
+                </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
           );

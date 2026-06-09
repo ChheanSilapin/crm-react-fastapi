@@ -8,6 +8,8 @@ import Banks from './pages/bank/Banks';
 import Login from './pages/Login';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Customers from './pages/customer/Customers';
+import Users from './pages/user/Users';
+import { NotFoundError } from './pages/NotFoundError';
 
 
 function App() {
@@ -23,6 +25,11 @@ function App() {
               <Route index path="/" element={<DashBoard />} />
               <Route path="/banks" element={<Banks />} />
               <Route path="/customers" element={<Customers />} />
+              <Route path="/users" element={<Users />} />
+
+              {/* Error boundary for 404 */}
+              <Route path="*" element={<NotFoundError />} />
+
             </Route>
           </Route>
 
