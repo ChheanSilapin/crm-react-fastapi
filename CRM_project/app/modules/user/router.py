@@ -9,7 +9,7 @@ from app.modules.user.schema import (
     UserUpdate,
     UserStatusUpdate,
     UserWithRole,
-    AdminUserCreate
+    AdminUserCreate,
 )
 
 router = APIRouter()

@@ -2,10 +2,17 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
+class Role(BaseModel):
+    name: str
+    description: str
+    model_config = {"from_attributes": True}
+
 class UserBase(BaseModel):
     username: str
     status: str
-    role_id: int
+    role: Role | None = None
+    
+    model_config = {"from_attributes": True}
 
 class UserOut(UserBase):
     id: int

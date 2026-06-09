@@ -15,8 +15,8 @@ class TokenData(BaseModel):
 
 
 class UserAuthBase(BaseModel):
-    username: str
-    password: str
+    username: str = Field(..., examples=["admin"])
+    password: str = Field(..., examples=["password123"])
 
 
 class UserLogin(UserAuthBase):

@@ -1,17 +1,21 @@
-"""
-Customer-related Pydantic schemas for request/response validation.
-
-This module contains Pydantic models for customer-related API endpoints.
-It uses a DRY approach by defining a base schema and inheriting from it.
-"""
 from typing import Optional
 from datetime import datetime, timezone
 from decimal import Decimal
+from enum import Enum
 from pydantic import BaseModel, Field
 from app.schemas.bank import BankSummary
 
-# Base schema with all fields common to both creation and response
-# This prevents code duplication.
+
+class DateFilter(str, Enum):
+    """Date filter shortcuts for customer queries."""
+    TODAY = "today"
+    YESTERDAY = "yesterday"
+    THIS_WEEK = "this_week"
+    THIS_MONTH = "this_month"
+    LAST_7_DAYS = "last_7_days"
+    LAST_MONTH = "last_month"
+    ALL = "all"
+
 class CustomerBase(BaseModel):
     customer_id: str = Field(..., max_length=20)
     type: str = Field(..., max_length=20)
@@ -51,7 +55,6 @@ class CustomerUpdate(BaseModel):
         le=Decimal('9999999999999.99')
     )
     bank_id: Optional[int] = Field(None)
-    #bank_name: Optional[str] = Field(None, max_length=255)
     note: Optional[str] = Field(None, max_length=255)
 
 class CustomerDeletionResponse(BaseModel):
@@ -68,6 +71,12 @@ class CustomerDeletionResponse(BaseModel):
         description="Response timestamp"
     )
 
+class User(BaseModel):
+    id: int
+    username: str
+    class Config:
+        from_attributes = True
+
 class CustomerResponse(BaseModel):
     id: int
     customer_id: str
@@ -79,6 +88,6 @@ class CustomerResponse(BaseModel):
     bank: BankSummary
     create_at: datetime
     update_at: datetime
-    create_by_user: int
+    created_by_user: User
     class Config:
         from_attributes = True

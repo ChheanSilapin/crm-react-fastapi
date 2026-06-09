@@ -16,7 +16,7 @@ from .api.v1.roles import router as roles_router
 from .api.v1.permissions import router as permissions_router
 from .api.v1.role_hierarchy import router as role_hierarchy_router
 from .api.v1 import bank  as banks_router
-from .api.v1 import customers as customer_router
+from .modules.customer.router import router as customer_router
 
 
 # Initialize rate limiter
@@ -74,7 +74,7 @@ app.include_router(roles_router, prefix="/api/v1", tags=["roles"])
 app.include_router(permissions_router, prefix="/api/v1", tags=["permissions"])
 app.include_router(role_hierarchy_router, prefix="/api/v1", tags=["role-hierarchy"])
 app.include_router(banks_router.router, prefix="/api/v1", tags=["banks"])
-app.include_router(customer_router.router, prefix="/api/v1", tags=["customers"])
+app.include_router(customer_router, prefix="/api/v1", tags=["customers"])
 
 
 

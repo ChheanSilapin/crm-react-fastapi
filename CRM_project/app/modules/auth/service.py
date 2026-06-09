@@ -24,9 +24,6 @@ from app.models.user import User
 
 
 class AuthService:
-    """Service layer — all business logic, validation, and HTTP errors live here."""
-
-    # ── Login ────────────────────────────────────────────────────────────
     @staticmethod
     def login(
         db: Session,
@@ -34,7 +31,6 @@ class AuthService:
         request: Request,
         response: Response,
     ) -> dict:
-        """Authenticate user, set cookie, return tokens."""
         check_auth_rate_limit(
             request, "login",
             max_attempts=5,
