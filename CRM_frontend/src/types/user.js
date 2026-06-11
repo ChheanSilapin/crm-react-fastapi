@@ -13,4 +13,9 @@ export const UserSchema = z.object({
     updated_at: z.string()
 })
 
+export const UserCreateSchema = z.object({
+    username: z.string().min(1, "Username is required"),
+    password: z.string().min(1, "Password is required"),
+    role_id: z.number("Role is required"),
+})
 export const UserListSchema = z.array(UserSchema);

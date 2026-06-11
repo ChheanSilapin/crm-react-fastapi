@@ -6,5 +6,6 @@ export const useCustomer = ({ limit = 50, offset = 0 } = {}) => {
         queryKey: ['customers', { limit, offset }],
         queryFn: () => CustomerApi.getCustomers({ limit, offset }),
         placeholderData: keepPreviousData,
+        
     });
 };

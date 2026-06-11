@@ -25,7 +25,6 @@ api.interceptors.request.use(
         return Promise.reject(error);
     }
 );
-
 // Response interceptor for error handling
 api.interceptors.response.use(
     (response) => response,
@@ -34,10 +33,11 @@ api.interceptors.response.use(
         if (error.response?.status === 401) {
             // Remove token from storage
             localStorage.removeItem('token');
-            localStorage.removeItem('user');
 
-            // Redirect to login page
-            window.location.href = '/login';
+            // Redirect to login page ONLY if not already there
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
         }
 
         return Promise.reject(error);

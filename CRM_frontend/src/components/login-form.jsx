@@ -1,28 +1,26 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { useLogin } from "@/hooks/mutations/useLogin"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { LoginRequest } from "@/types/login"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useLogin } from "@/hooks/mutations/useLogin";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginRequest } from "@/types/login";
+import { PasswordInput } from "./password-input";
 
-export function LoginForm({
-  className,
-  ...props
-}) {
+export function LoginForm({ className, ...props }) {
   const { mutate: login, isPending } = useLogin();
 
   const {
@@ -32,22 +30,20 @@ export function LoginForm({
   } = useForm({
     resolver: zodResolver(LoginRequest),
     defaultValues: {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
     },
   });
 
-  const onSubmit = handleSubmit(async (data) => {
-    await login(data);
+  const onSubmit = handleSubmit((data) => {
+    login(data);
   });
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>
-            Login with your account
-          </CardDescription>
+          <CardDescription>Login with your account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit}>
@@ -62,24 +58,30 @@ export function LoginForm({
                   {...register("username")}
                 />
                 {errors.username && (
-                  <p className="text-sm text-destructive">{errors.username.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.username.message}
+                  </p>
                 )}
               </Field>
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
+                  <a
+                    href="#"
+                    className="ml-auto text-sm underline-offset-4 hover:underline"
+                  >
                     Forgot your password?
                   </a>
                 </div>
-                <Input
+                <PasswordInput
                   id="password"
-                  type="password"
                   disabled={isPending}
                   {...register("password")}
                 />
                 {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.password.message}
+                  </p>
                 )}
               </Field>
               <Field>
