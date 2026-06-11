@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { TablePagination } from "@/components/ui/pagination";
 
 const statusColors = {
   active: "bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200",
@@ -36,7 +37,14 @@ const statusColors = {
     "bg-neutral-300/40 border-neutral-300 text-neutral-800 dark:text-neutral-300",
 };
 
-export function UserTable({ data = [], isLoading }) {
+export function UserTable({
+  data = [],
+  isLoading,
+  total,
+  limit,
+  offset,
+  onPaginationChange,
+}) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
@@ -174,7 +182,7 @@ export function UserTable({ data = [], isLoading }) {
                       {user.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground max-w-sm truncate">
+                  <TableCell className="text-muted-foreground max-w-sm truncate capitalize">
                     {user.role.name}
                   </TableCell>
 
@@ -209,6 +217,12 @@ export function UserTable({ data = [], isLoading }) {
           </TableBody>
         </Table>
       </div>
+      <TablePagination
+        total={total}
+        limit={limit}
+        offset={offset}
+        onPaginationChange={onPaginationChange}
+      />
     </div>
   );
 }

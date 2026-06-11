@@ -5,9 +5,11 @@ import { UserPlus } from "lucide-react";
 import { UserTable } from "./components/user-table";
 import { UsersAddModal } from "./components/user-add-modal";
 import useDialogState from "@/hooks/use-dialog-state";
+import { useState } from "react";
 
 export default function Users() {
-  const { data: users, isLoading } = useUsersQuery();
+  const [pagination, setPagination] = useState({ limit: 10, offset: 0 });
+  const { data: users, isLoading } = useUsersQuery(pagination);
   const [dialogOpen, setDialogOpen] = useDialogState(null);
 
   return (
@@ -22,7 +24,14 @@ export default function Users() {
             <span>Add User</span> <UserPlus size={18} />
           </Button>
         </div>
-        <UserTable data={users} isLoading={isLoading} />
+        <UserTable
+          data={users?.items}
+          isLoading={isLoading}
+          total={users?.total}
+          limit={users?.limit}
+          offset={users?.offset}
+          onPaginationChange={setPagination}
+        />
         <UsersAddModal
           open={dialogOpen === "add"}
           onOpenChange={() => setDialogOpen("add")}

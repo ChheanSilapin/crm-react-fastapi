@@ -8,34 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { PlusCircleIcon } from "lucide-react";
+import { DateTimePicker24h } from "@/components/ui/date-time-picker";
 
 export function CustomerFilters({ children }) {
   const [datePreset, setDatePreset] = useState("today"); // "today", "all_time", "custom"
   const [txnType, setTxnType] = useState("all"); // "all", "deposit", "withdrawal"
   const [currency, setCurrency] = useState("all");
+  const [dateFilter, setDateFilter] = useState("today");
 
-  const [customDate, setCustomDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-
-  const handleDateChange = (e) => {
-    setCustomDate(e.target.value);
-    setDatePreset("custom"); // Automatically switch to custom
-  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -45,57 +27,44 @@ export function CustomerFilters({ children }) {
           {children}
 
           {/* Date Preset Group */}
-          <div className="flex items-center rounded-md p-1 bg-muted/20">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 border-dashed"
-                >
-                  <PlusCircleIcon className="mr-2 h-4 w-4" />
-                  Date filter
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0" align="start">
-                <Command>
-                  <CommandList>
-                    <CommandGroup>
-                      <CommandItem>
-                        <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary">
-                          {/* Unchecked state */}
-                        </div>
-                        <span>Active</span>
-                      </CommandItem>
-                      <CommandItem>
-                        <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary opacity-50"></div>
-                        <span>Inactive</span>
-                      </CommandItem>
-                      <CommandItem>
-                        <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary opacity-50"></div>
-                        <span>Invited</span>
-                      </CommandItem>
-                      <CommandItem>
-                        <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary opacity-50"></div>
-                        <span>Suspended</span>
-                      </CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant={datePreset === "all_time" ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => {
-                setDatePreset("all_time");
-                setCustomDate("");
-                setStartTime("");
-                setEndTime("");
-              }}
-            >
-              All Time
-            </Button>
+          <div className="flex items-center rounded-md p-1 bg-muted/20 gap-2">
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Date" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="all">All Customers</SelectItem>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="this_week">This week</SelectItem>
+                <SelectItem value="this_month">This month</SelectItem>
+                <SelectItem value="last_month">Last Month</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={txnType} onValueChange={setTxnType}>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="deposit">Deposit</SelectItem>
+                <SelectItem value="withdrawal">Withdrawal</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Currency Dropdown */}
+
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Currency" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="all">All Currencies</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="KHR">KHR</SelectItem>
+                <SelectItem value="EUR">EUR</SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               variant={datePreset === "custom" ? "secondary" : "ghost"}
               size="sm"
@@ -105,47 +74,6 @@ export function CustomerFilters({ children }) {
             </Button>
           </div>
         </div>
-
-        <div className="flex items-center gap-4">
-          {/* Transaction Type Filter */}
-          <div className="flex items-center rounded-md p-1 bg-muted/20">
-            <Button
-              variant={txnType === "all" ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setTxnType("all")}
-            >
-              All
-            </Button>
-            <Button
-              variant={txnType === "deposit" ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setTxnType("deposit")}
-            >
-              Deposit
-            </Button>
-            <Button
-              variant={txnType === "withdrawal" ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setTxnType("withdrawal")}
-            >
-              Withdrawal
-            </Button>
-            {/* Currency Dropdown */}
-            <div className="w-[120px]">
-              <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger className="h-9">
-                  <SelectValue placeholder="Currency" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectItem value="all">All Currencies</SelectItem>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="KHR">KHR</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Conditional Date & Time Pickers */}
@@ -153,33 +81,18 @@ export function CustomerFilters({ children }) {
         <div className="flex flex-wrap items-center gap-4 p-4 border rounded-md bg-muted/10 animate-in fade-in slide-in-from-top-2">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">
-              Date
+              Start Date
             </label>
-            <Input
-              type="date"
-              className="h-9"
-              value={customDate}
-              onChange={handleDateChange}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-muted-foreground">
-              Start Time
-            </label>
-            <Input
-              type="time"
-              className="h-9"
+            <DateTimePicker24h
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">
-              End Time
+              End Date
             </label>
-            <Input
-              type="time"
-              className="h-9"
+            <DateTimePicker24h
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
             />
