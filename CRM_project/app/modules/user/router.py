@@ -10,17 +10,20 @@ from app.modules.user.schema import (
     UserStatusUpdate,
     UserWithRole,
     AdminUserCreate,
+    UserListResponse,
 )
 
 router = APIRouter()
 
-@router.get("/users", response_model=List[UserOut])
+@router.get("/users", response_model=UserListResponse)
 def list_users(
     db: Session = Depends(get_db),
+    offset: int = 0,
+    limit: int = 10,
     _: bool = Depends(require_permissions(["users:read"])),
 ):
     """List all users. Requires users:read permission."""
-    return UserService.get_all_users(db)
+    return UserService.get_all_users(db, offset=offset, limit=limit)
 
 @router.get("/users/{user_id}", response_model=UserOut)
 def get_user(

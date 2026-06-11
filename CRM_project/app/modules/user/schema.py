@@ -20,6 +20,16 @@ class UserOut(UserBase):
     updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
+class UserListResponse(BaseModel):
+    items: list[UserOut]
+    total: int
+    limit: int
+    offset: int
+    page: int
+    pages: int
+    has_next: bool
+    has_prev: bool    
+
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     status: Optional[str] = None

@@ -7,13 +7,27 @@ from app.core.security import get_password_hash
 from app.core.password_policy import validate_password, PasswordValidationError
 from app.services.role_service import RoleService
 from app.modules.user.schema import UserUpdate, UserStatusUpdate, AdminUserCreate
-
+import math
 class UserService:
     """Service layer for user business logic and validation."""
 
     @staticmethod
-    def get_all_users(db: Session, skip: int = 0, limit: int = 100) -> List[User]:
-        return UserRepository.get_all(db, skip=skip, limit=limit)
+    def get_all_users(db: Session, offset: int = 0, limit: int = 10):
+        items, total = UserRepository.get_all_with_count(db, offset=offset, limit=limit)
+        
+        current_page = (offset // limit) + 1
+        total_pages = math.ceil(total / limit) if total > 0 else 1
+        
+        return {
+            "items": items,
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "page": current_page,
+            "pages": total_pages,
+            "has_next": current_page < total_pages,
+            "has_prev": current_page > 1
+        }
 
     @staticmethod
     def get_user_by_id(db: Session, user_id: int) -> User:
