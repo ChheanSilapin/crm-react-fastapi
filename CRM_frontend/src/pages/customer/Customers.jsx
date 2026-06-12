@@ -4,10 +4,24 @@ import { useCustomer } from "@/hooks/queries/useCustomer";
 import { UserPlus } from "lucide-react";
 import { useState } from "react";
 import { CustomerTable } from "./components/customer-table";
+import useDialogState from "@/hooks/use-dialog-state";
+import { CustomerAddModal } from "./components/customer-add-modal";
 
 export default function Customers() {
   const [pagination, setPagination] = useState({ limit: 10, offset: 0 });
-  const { data: customer, isLoading } = useCustomer(pagination);
+  const [filters, setFilters] = useState({
+    dateFilter: "today",
+    txnType: "all",
+    currency: "all",
+    startTime: "",
+    endTime: "",
+  });
+
+  const { data: customer, isLoading } = useCustomer({
+    ...pagination,
+    ...filters,
+  });
+  const [dialogOpen, setDialogOpen] = useDialogState(null);
 
   return (
     <>
@@ -17,7 +31,7 @@ export default function Customers() {
             <h2 className="text-2xl font-bold tracking-tight">Customer List</h2>
             <p className="text-muted-foreground">Manage your customers here.</p>
           </div>
-          <Button className="space-x-1">
+          <Button className="space-x-1" onClick={() => setDialogOpen("add")}>
             <span>Add Customer</span> <UserPlus size={18} />
           </Button>
         </div>
@@ -28,7 +42,14 @@ export default function Customers() {
           total={customer?.total}
           limit={customer?.limit}
           offset={customer?.offset}
+          message={customer?.message}
           onPaginationChange={setPagination}
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
+        <CustomerAddModal
+          open={dialogOpen === "add"}
+          onOpenChange={() => setDialogOpen("add")}
         />
       </Main>
     </>

@@ -31,18 +31,28 @@ import {
 import { TablePagination } from "@/components/ui/pagination";
 
 import { CustomerFilters } from "./customer-filters";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
+const typeColors = {
+  deposit: "bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200",
+  withdrawal:
+    "bg-amber-100/30 text-amber-900 dark:text-amber-200 border-amber-200",
+};
 export function CustomerTable({
   data = [],
   isLoading,
   total,
   limit,
   offset,
+  message,
   onPaginationChange,
+  filters,
+  onFiltersChange,
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <CustomerFilters>
+      <CustomerFilters filters={filters} onFiltersChange={onFiltersChange}>
         <Input
           placeholder="Filter customer..."
           className="h-8 w-[150px] lg:w-[250px]"
@@ -71,7 +81,7 @@ export function CustomerTable({
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={10}
                   className="h-24 text-center text-muted-foreground"
                 >
                   Loading customer......
@@ -80,10 +90,10 @@ export function CustomerTable({
             ) : data.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={10}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  No customers found.
+                  {message || "No customers found."}
                 </TableCell>
               </TableRow>
             ) : (
@@ -93,7 +103,16 @@ export function CustomerTable({
                     {customer.customer_id}
                   </TableCell>
                   <TableCell className="text-muted-foreground max-w-sm truncate">
-                    {customer.type}
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "capitalize",
+                        typeColors[customer.type?.toLowerCase()] ||
+                          "bg-neutral-100 text-neutral-800",
+                      )}
+                    >
+                      {customer.type}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground max-w-sm truncate">
                     {customer.currency}

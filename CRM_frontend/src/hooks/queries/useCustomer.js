@@ -1,10 +1,10 @@
 import { CustomerApi } from "@/api/customerApi";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-export const useCustomer = ({ limit = 50, offset = 0 } = {}) => {
+export const useCustomer = (params = {}) => {
     return useQuery({
-        queryKey: ['customers', { limit, offset }],
-        queryFn: () => CustomerApi.getCustomers({ limit, offset }),
+        queryKey: ['customers', params],
+        queryFn: () => CustomerApi.getCustomers(params),
         placeholderData: keepPreviousData,
         
     });

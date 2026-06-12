@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -10,14 +8,18 @@ import {
 } from "@/components/ui/select";
 import { DateTimePicker24h } from "@/components/ui/date-time-picker";
 
-export function CustomerFilters({ children }) {
-  const [datePreset, setDatePreset] = useState("today"); // "today", "all_time", "custom"
-  const [txnType, setTxnType] = useState("all"); // "all", "deposit", "withdrawal"
-  const [currency, setCurrency] = useState("all");
-  const [dateFilter, setDateFilter] = useState("today");
+export function CustomerFilters({ children, filters, onFiltersChange }) {
+  const { dateFilter, txnType, currency, startTime, endTime } = filters;
 
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const updateFilter = (key, value) => {
+    onFiltersChange((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const setDateFilter = (v) => updateFilter("dateFilter", v);
+  const setTxnType = (v) => updateFilter("txnType", v);
+  const setCurrency = (v) => updateFilter("currency", v);
+  const setStartTime = (v) => updateFilter("startTime", v);
+  const setEndTime = (v) => updateFilter("endTime", v);
 
   return (
     <div className="flex flex-col gap-4">
@@ -33,11 +35,11 @@ export function CustomerFilters({ children }) {
                 <SelectValue placeholder="Date" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="all">All Customers</SelectItem>
                 <SelectItem value="today">Today</SelectItem>
                 <SelectItem value="this_week">This week</SelectItem>
                 <SelectItem value="this_month">This month</SelectItem>
                 <SelectItem value="last_month">Last Month</SelectItem>
+                <SelectItem value="all">All Customers</SelectItem>
               </SelectContent>
             </Select>
 
@@ -66,9 +68,9 @@ export function CustomerFilters({ children }) {
               </SelectContent>
             </Select>
             <Button
-              variant={datePreset === "custom" ? "secondary" : "ghost"}
+              variant={dateFilter === "custom" ? "secondary" : "ghost"}
               size="sm"
-              onClick={() => setDatePreset("custom")}
+              onClick={() => setDateFilter("custom")}
             >
               Custom Date...
             </Button>
@@ -77,7 +79,7 @@ export function CustomerFilters({ children }) {
       </div>
 
       {/* Conditional Date & Time Pickers */}
-      {datePreset === "custom" && (
+      {dateFilter === "custom" && (
         <div className="flex flex-wrap items-center gap-4 p-4 border rounded-md bg-muted/10 animate-in fade-in slide-in-from-top-2">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">
