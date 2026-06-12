@@ -33,6 +33,8 @@ import { TablePagination } from "@/components/ui/pagination";
 import { CustomerFilters } from "./customer-filters";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { CustomerEditModal } from "./customer-edit-modal";
 
 const typeColors = {
   deposit: "bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200",
@@ -50,6 +52,8 @@ export function CustomerTable({
   filters,
   onFiltersChange,
 }) {
+  const [editingCustomerId, setEditingCustomerId] = useState(null);
+
   return (
     <div className="flex flex-col gap-4">
       <CustomerFilters filters={filters} onFiltersChange={onFiltersChange}>
@@ -150,6 +154,7 @@ export function CustomerTable({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                      onClick={() => setEditingCustomerId(customer.id)}
                     >
                       <FileEditIcon className="h-4 w-4" />
                     </Button>
@@ -173,6 +178,13 @@ export function CustomerTable({
         offset={offset}
         onPaginationChange={onPaginationChange}
       />
+      {editingCustomerId && (
+        <CustomerEditModal
+          open={!!editingCustomerId}
+          onOpenChange={(open) => !open && setEditingCustomerId(null)}
+          customerId={editingCustomerId}
+        />
+      )}
     </div>
   );
 }

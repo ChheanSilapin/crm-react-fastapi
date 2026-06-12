@@ -9,3 +9,11 @@ export const useCustomer = (params = {}) => {
         
     });
 };
+
+export const useCustomerById = (id) => {
+    return useQuery({
+        queryKey: ['customers', id],
+        queryFn: () => CustomerApi.getById(id),
+        enabled: !!id,
+    });
+};

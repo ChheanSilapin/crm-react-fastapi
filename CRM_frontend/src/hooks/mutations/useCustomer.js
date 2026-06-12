@@ -15,3 +15,17 @@ export const useCustomerMutation = () => {
     },
   });
 };
+export const useCustomerUpdateMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }) => CustomerApi.updateCustomer(id, data),
+    onSuccess: () => {
+      toast.success("Successfully updated customer!");
+      queryClient.invalidateQueries(['customers']);
+    },
+    onError: (error) => {
+      const message = error.response?.data?.detail || error.message || "Failed to update customer";
+      toast.error(message);
+    },
+  });
+};

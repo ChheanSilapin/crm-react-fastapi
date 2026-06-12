@@ -1,9 +1,33 @@
 import api from "./api";
-import { BankResponse } from "@/types/bank";
+import { BankCreate, BankDeleteResponse, BankListResponse, BankResponse } from "@/types/bank";
 
 export const BankApi = {
     getBanks: async ({ limit = 50, offset = 0 } = {}) => {
         const response = await api.get(`/api/v1/banks?limit=${limit}&offset=${offset}`);
+        return BankListResponse.parse(response.data);
+    },
+    createBank: async (bank) => {
+        const validate = BankCreate.parse(bank);
+        
+        const formData = new FormData();
+        formData.append("bank_name", validate.bank_name);
+        if (validate.description) {
+            formData.append("description", validate.description);
+        }
+        if (validate.logo && validate.logo.length > 0) {
+            formData.append("logo", validate.logo[0]); 
+        }
+
+        const response = await api.post(`/api/v1/banks`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         return BankResponse.parse(response.data);
+    },
+    deleteBank:async (id)=>{
+        const response = await api.delete(`/api/v1/banks/${id}`);
+        return BankDeleteResponse.parse(response.data);
     }
+    
 };

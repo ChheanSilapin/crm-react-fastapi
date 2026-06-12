@@ -48,3 +48,14 @@ export const CustomerResponse = z.object({
     message: z.string(),
     data: CustomerBase,
 });
+
+
+export const CustomerUpdateSchema = z.object({
+    customer_id: z.string().optional(),
+    type: z.string().optional(),
+    currency: z.string().optional(),
+    bank_id: z.number().optional(),
+    credit: z.number().optional(),
+    amount: z.number().optional(),
+    note: z.string().optional(),
+});

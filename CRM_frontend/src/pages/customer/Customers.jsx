@@ -8,7 +8,7 @@ import useDialogState from "@/hooks/use-dialog-state";
 import { CustomerAddModal } from "./components/customer-add-modal";
 
 export default function Customers() {
-  const [pagination, setPagination] = useState({ limit: 10, offset: 0 });
+  const [pagination, setPagination] = useState({ limit: 50, offset: 0 });
   const [filters, setFilters] = useState({
     dateFilter: "today",
     txnType: "all",
