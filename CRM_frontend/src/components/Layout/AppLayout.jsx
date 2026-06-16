@@ -1,38 +1,28 @@
-import { Outlet } from 'react-router-dom';
-import { SidebarProvider, useSidebar } from '../../contexts/SidebarContext';
-import AppHeader from './AppHeader';
-import AppSidebar from './AppSidebar';
-import Backdrop from './Backdrop';
+import React from "react";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarInset,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Outlet } from "react-router-dom";
+import { Header } from "../header";
+import { Search } from "../search";
+import { ProfileDropdown } from "../profile-dropdown";
+import { ThemeSwitch } from "../theme-toggle";
 
-const LayoutContent = () => {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-
-  return (
-    <div className="min-h-screen xl:flex font-outfit">
-      <div>
-        <AppSidebar />
-        <Backdrop />
-      </div>
-      <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${
-          isExpanded || isHovered ? "lg:ml-[290px]" : "lg:ml-[90px]"
-        } ${isMobileOpen ? "ml-0" : ""}`}
-      >
-        <AppHeader />
-        <div className="p-4 mx-auto max-w-screen-2xl md:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AppLayout = () => {
+export default function AppLayout() {
   return (
     <SidebarProvider>
-      <LayoutContent />
+      <AppSidebar />
+      <SidebarInset className="min-w-0">
+        <Header fixed>
+          <Search className="me-auto" />
+          <ThemeSwitch />
+          <ProfileDropdown />
+        </Header>
+        <Outlet />
+      </SidebarInset>
     </SidebarProvider>
   );
-};
-
-export default AppLayout;
+}

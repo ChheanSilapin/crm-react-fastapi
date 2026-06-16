@@ -1,73 +1,39 @@
-import { apiRequest } from "./axios";
+import api from "./api";
+import { CustomerBase, CustomerCreateSchema, CustomerListResponse, CustomerResponse, CustomerUpdateSchema } from "@/types/customer";
 
-export const customerAPI = {
-  getAll: async (params = {}) => {
-    const searchParams = new URLSearchParams();
-    for (const key in params) {
-      if (params[key]) {
-        searchParams.append(key, params[key]);
-      }
-    }
-    const queryString = searchParams.toString();
-    const response = await apiRequest(
-      `/v1/customers${queryString ? `?${queryString}` : ""}`
-    );
+export const CustomerApi = {
+    getCustomers: async (params = {}) => {
+        const { limit = 10, offset = 0, dateFilter = "today", txnType = "all", currency = "all", startTime, endTime } = params;
+        const page = Math.floor(offset / limit) + 1;
+        
+        const queryParams = new URLSearchParams({
+            limit,
+            page,
+            date_filter: dateFilter,
+        });
 
-    if (response.items) {
-      return {
-        data: response.items,
-        pagination: {
-          total: response.total,
-          limit: response.limit,
-          offset: response.offset,
-          page: response.page,
-          pages: response.pages,
-          has_next: response.has_next,
-          has_prev: response.has_prev,
-        },
-        message: response.message,
-      };
-    }
+        if (txnType !== "all") queryParams.append("type", txnType);
+        if (currency !== "all") queryParams.append("currency", currency);
+        if (dateFilter === "custom") {
+            if (startTime) queryParams.append("start_date", startTime);
+            if (endTime) queryParams.append("end_date", endTime);
+        }
 
-    return {
-      data: response.items || [],
-      pagination: response.pagination || {},
-      message: response.message || "An unexpected error occurred.",
-    };
-  },
-
-  getById: async (id) => {
-    const response = await apiRequest(`/v1/customers/${id}`);
-    return response;
-  },
-
-  create: async (customerData) => {
-    const response = await apiRequest("/v1/customers", {
-      method: "POST",
-      data: customerData,
-    });
-    return response;
-  },
-
-  update: async (id, customerData) => {
-    const response = await apiRequest(`/v1/customers/${id}`, {
-      method: "PUT",
-      data: customerData,
-    });
-    return response;
-  },
-
-  delete: async (id) => {
-    const response = await apiRequest(`/v1/customers/${id}`, {
-      method: "DELETE",
-    });
-    return response;
-  },
+        const response = await api.get(`/api/v1/customers?${queryParams.toString()}`);
+        return CustomerListResponse.parse(response.data);
+    },
+    createCustomer :  async (data) => {
+        const validatedData = CustomerCreateSchema.parse(data);
+        const response = await api.post(`/api/v1/customers`, validatedData);
+        return CustomerResponse.parse(response.data);
+    },
+    updateCustomer : async (id, data) => {
+        const validatedData = CustomerUpdateSchema.parse(data);
+        const response = await api.put(`/api/v1/customers/${id}`, validatedData);
+        return CustomerResponse.parse(response.data);
+    },
+    getById: async (id) => {
+        const response = await api.get(`/api/v1/customers/${id}`);
+        return CustomerResponse.parse(response.data);
+    },
 };
-
-// Export individual functions for direct import
-export const getAllCustomers = customerAPI.getAll;
-export const getCustomerById = customerAPI.getById;
-export const createCustomer = customerAPI.create;
-export const updateCustomer = customerAPI.update;
-export const deleteCustomer = customerAPI.delete;

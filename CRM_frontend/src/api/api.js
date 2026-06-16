@@ -1,15 +1,47 @@
-export { isAuthenticated, setAuthToken, initializeAuthToken } from './axios';
+import axios from 'axios';
 
-export { authAPI, login, getUser, changePassword, getPasswordPolicy, logout } from './authApi';
+// Get API base URL from environment variables
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export { customerAPI, getAllCustomers, getCustomerById, createCustomer, updateCustomer, deleteCustomer } from './customerApi';
+// Create axios instance
+const api = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    },
+});
 
-export { bankAPI, getAllBanks, getBankById, createBank, updateBank, deleteBank, uploadBankLogo } from './bankApi';
+// Request interceptor to add token
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+// Response interceptor for error handling
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        // Handle 401 Unauthorized error
+        if (error.response?.status === 401) {
+            // Remove token from storage
+            localStorage.removeItem('token');
 
-export { rolesAPI, getRoleById, createRole, updateRole, deleteRole, assignPermissions, getRoleUsers } from './rolesApi';
+            // Redirect to login page ONLY if not already there
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
+        }
 
-export { permissionsAPI, getAllPermissions, getAllRoles } from './permissionsApi';
+        return Promise.reject(error);
+    }
+);
 
-export { usersAPI, getAllUsers, getUserById, createUser, updateUser, deleteUser, updateUserStatus, getUserWithRole } from './usersApi';
-
-export { dashboardAPI, getDashboardOverview } from './dashboardApi';
+export default api;

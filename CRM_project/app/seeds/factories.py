@@ -156,7 +156,7 @@ class DataFactory:
         
         # Create default admin user
         users.append({
-            "user_name": "admin",
+            "username": "admin",
             "password_hash": DataFactory.hash_password("password123"),
             "role_name": "admin",
             "status": "active"
@@ -164,7 +164,7 @@ class DataFactory:
         
         # Create default manager user
         users.append({
-            "user_name": "manager",
+            "username": "manager",
             "password_hash": DataFactory.hash_password("password123"),
             "role_name": "manager",
             "status": "active"
@@ -172,7 +172,7 @@ class DataFactory:
         
         # Create default regular user
         users.append({
-            "user_name": "user",
+            "username": "user",
             "password_hash": DataFactory.hash_password("password123"),
             "role_name": "user",
             "status": "active"
@@ -188,7 +188,7 @@ class DataFactory:
             username = f"{base_username}_{i+1}" if len(base_username) > 45 else base_username
             
             users.append({
-                "user_name": username[:50],  # Ensure it fits in the 50 char limit
+                "username": username[:50],  # Ensure it fits in the 50 char limit
                 "password_hash": DataFactory.hash_password("password123"),
                 "role_name": random.choice(role_names),
                 "status": random.choices(statuses, weights=[80, 15, 5])[0]  # 80% active, 15% inactive, 5% suspended

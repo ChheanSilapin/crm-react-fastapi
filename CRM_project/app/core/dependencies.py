@@ -78,32 +78,10 @@ async def get_current_active_user(
 
 
 def require_permissions(required_permissions: List[str]):
-    """
-    Dependency factory to require specific permissions.
-    
-    Args:
-        required_permissions: List of required permission strings
-        
-    Returns:
-        Dependency function that checks permissions
-    """
     def permission_checker(
         current_user: User = Depends(get_current_user),
         db: Session = Depends(get_db)
     ) -> User:
-        """
-        Check if current user has required permissions.
-        
-        Args:
-            current_user: Current authenticated user
-            db: Database session
-            
-        Returns:
-            Current user if permissions are satisfied
-            
-        Raises:
-            HTTPException: If user lacks required permissions
-        """
         if not current_user.role:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
