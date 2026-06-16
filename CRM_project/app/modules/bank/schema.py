@@ -1,9 +1,3 @@
-"""
-Bank-related Pydantic schemas for request/response validation.
-
-This module contains Pydantic models for bank-related API endpoints,
-refactored to follow the DRY principle using inheritance.
-"""
 from typing import Optional
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field, field_validator

@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from pydantic import BaseModel, Field
-from app.schemas.bank import BankSummary
+from app.modules.bank.schema import BankSummary
 
 
 class DateFilter(str, Enum):

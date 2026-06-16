@@ -6,6 +6,14 @@ class RoleBase(BaseModel):
     name: str
     description: Optional[str] = None
 
+class PermissionBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class PermissionOut(PermissionBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
 class RoleCreate(RoleBase):
     pass
 
@@ -18,12 +26,8 @@ class RoleOut(RoleBase):
     updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
-class PermissionBase(BaseModel):
-    name: str
-    description: Optional[str] = None
-
-class PermissionOut(PermissionBase):
-    id: int
+class RoleWithPermissions(RoleOut):
+    permissions: List[PermissionOut] = []
     model_config = ConfigDict(from_attributes=True)
 
 class RolePermissionAssignment(BaseModel):

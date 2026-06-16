@@ -17,7 +17,7 @@ from app.core.security import (
     verify_password,
     get_password_hash,
 )
-from app.services.role_service import RoleService
+from app.modules.role.service import RoleService
 from app.services.token_blacklist_service import TokenBlacklistService
 from app.modules.auth.repository import AuthRepository
 from app.models.user import User

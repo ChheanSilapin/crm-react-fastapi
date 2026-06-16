@@ -5,7 +5,7 @@ from app.models.user import User
 from app.modules.user.repository import UserRepository
 from app.core.security import get_password_hash
 from app.core.password_policy import validate_password, PasswordValidationError
-from app.services.role_service import RoleService
+from app.modules.role.service import RoleService
 from app.modules.user.schema import UserUpdate, UserStatusUpdate, AdminUserCreate
 import math
 class UserService:
