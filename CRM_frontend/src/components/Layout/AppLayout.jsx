@@ -21,9 +21,7 @@ export default function AppLayout() {
           <ThemeSwitch />
           <ProfileDropdown />
         </Header>
-        <div className="px-4 min-w-0 flex-1 flex flex-col">
-          <Outlet />
-        </div>
+        <Outlet />
       </SidebarInset>
     </SidebarProvider>
   );

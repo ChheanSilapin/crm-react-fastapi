@@ -32,6 +32,7 @@ import { TablePagination } from "@/components/ui/pagination";
 import { getImageUrl } from "@/lib/utils";
 import { useState } from "react";
 import { BankDeleteDialog } from "./bank-delete-modal";
+import { BankEditModal } from "./bank-edit-modal";
 
 export function BankTable({
   data = [],
@@ -42,10 +43,11 @@ export function BankTable({
   onPaginationChange,
 }) {
   const [deleteBank, setDeleteBank] = useState(null);
+  const [editingBankId, setEditingBankId] = useState(null);
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Input
           placeholder="Filter banks..."
           className="h-8 w-[150px] lg:w-[250px]"
@@ -197,6 +199,7 @@ export function BankTable({
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() => setEditingBankId(bank.bank_id)}
                       className="h-8 w-8 text-muted-foreground hover:text-foreground"
                     >
                       <FileEditIcon className="h-4 w-4" />
@@ -222,12 +225,19 @@ export function BankTable({
         offset={offset}
         onPaginationChange={onPaginationChange}
       />
-      
-      <BankDeleteDialog 
-        open={!!deleteBank} 
-        onOpenChange={(open) => !open && setDeleteBank(null)} 
-        bank={deleteBank} 
+
+      <BankDeleteDialog
+        open={!!deleteBank}
+        onOpenChange={(open) => !open && setDeleteBank(null)}
+        bank={deleteBank}
       />
+      {editingBankId && (
+        <BankEditModal
+          open={!!editingBankId}
+          onOpenChange={(open) => !open && setEditingBankId(null)}
+          bankId={editingBankId}
+        />
+      )}
     </div>
   );
 }

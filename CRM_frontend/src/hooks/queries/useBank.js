@@ -8,3 +8,10 @@ export const useBank = ({ limit = 50, offset = 0 } = {}) => {
         placeholderData: keepPreviousData,
     });
 };
+export const useBankById = (bankId) => {
+    return useQuery({
+        queryKey: ['banks', bankId],
+        queryFn: () => BankApi.getBank(bankId),
+        enabled: !!bankId,
+    });
+};

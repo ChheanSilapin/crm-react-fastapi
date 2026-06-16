@@ -24,12 +24,12 @@ export function CustomerFilters({ children, filters, onFiltersChange }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Search Input passed as children */}
           {children}
 
           {/* Date Preset Group */}
-          <div className="flex items-center rounded-md p-1 bg-muted/20 gap-2">
+          <div className="flex flex-wrap items-center rounded-md p-1 bg-muted/20 gap-2">
             <Select value={dateFilter} onValueChange={setDateFilter}>
               <SelectTrigger className="h-9">
                 <SelectValue placeholder="Date" />
@@ -67,13 +67,6 @@ export function CustomerFilters({ children, filters, onFiltersChange }) {
                 <SelectItem value="EUR">EUR</SelectItem>
               </SelectContent>
             </Select>
-            <Button
-              variant={dateFilter === "custom" ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setDateFilter("custom")}
-            >
-              Custom Date...
-            </Button>
           </div>
         </div>
       </div>

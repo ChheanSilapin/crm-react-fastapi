@@ -1,8 +1,13 @@
 import { useMemo, useEffect } from "react";
+import { getImageUrl } from "@/lib/utils";
 
 export function useFilePreview(file) {
   const previewUrl = useMemo(() => {
-    if (file) {
+    if (!file) return null;
+    if (typeof file === "string") {
+      return getImageUrl(file);
+    }
+    if (file instanceof File || file instanceof Blob) {
       return URL.createObjectURL(file);
     }
     return null;
@@ -10,7 +15,7 @@ export function useFilePreview(file) {
 
   useEffect(() => {
     return () => {
-      if (previewUrl) {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };

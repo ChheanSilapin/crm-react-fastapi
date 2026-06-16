@@ -16,6 +16,21 @@ export const useBankMutation = () => {
   });
 };
 
+export const useUpdateBankMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, bank }) => BankApi.updateBank({id, bank}),
+    onSuccess: () => {
+      toast.success("Successfully updated bank!");
+      queryClient.invalidateQueries(['banks']);
+    },
+    onError: (error) => {
+      const message = error.response?.data?.detail || error.message || "Failed to update bank";
+      toast.error(message);
+    },
+  });
+};
+
 export const useDeleteBankMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

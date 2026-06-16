@@ -12,7 +12,14 @@ import { useFilePreview } from "@/hooks/useFilePreview";
 
 export const LogoUploadField = forwardRef(
   ({ value, onChange, ...fieldProps }, ref) => {
-    const file = value && value.length > 0 ? value[0] : null;
+    let file = null;
+    if (value) {
+      if (typeof value === "string") {
+        file = value;
+      } else if (value.length > 0) {
+        file = value[0];
+      }
+    }
     const previewUrl = useFilePreview(file);
     const inputRef = useRef(null);
 
@@ -80,7 +87,7 @@ export const LogoUploadField = forwardRef(
                   className="text-muted-foreground truncate max-w-[150px]"
                   aria-live="polite"
                 >
-                  {file.name}
+                  {typeof file === "string" ? file.split("/").pop() : file.name}
                 </p>{" "}
                 <button
                   type="button"
@@ -89,7 +96,7 @@ export const LogoUploadField = forwardRef(
                     if (inputRef.current) inputRef.current.value = "";
                   }}
                   className="text-destructive cursor-pointer font-medium hover:underline"
-                  aria-label={`Remove ${file.name}`}
+                  aria-label={`Remove ${typeof file === "string" ? "logo" : file.name}`}
                 >
                   Remove
                 </button>

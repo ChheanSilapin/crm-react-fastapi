@@ -26,6 +26,11 @@ export const BankCreate = z.object({
     description: z.string().optional(),
     logo: z.any().optional(),
 })
+export const BankUpdate = z.object({
+    bank_name: z.string().optional(),
+    description: z.string().optional(),
+    logo: z.any().optional(),
+})
 
 export const BankResponse = z.object({
     message: z.string(),
