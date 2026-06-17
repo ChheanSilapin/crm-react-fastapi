@@ -15,3 +15,33 @@ export const useUserMutation = () => {
     },
   });
 };
+
+export const useUserUpdate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({id, data}) => UserApi.updateUser(id, data),
+    onSuccess: () => {
+      toast.success("Successfully updated user!");
+      queryClient.invalidateQueries(['users']);
+    },
+    onError: (error) => {
+      const message = error.response?.data?.detail || error.message || "Failed to update user";
+      toast.error(message);
+    },
+  });
+};
+
+export const useUserDelete = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => UserApi.deleteUser(id),
+    onSuccess: () => {
+      toast.success("Successfully deleted user!");
+      queryClient.invalidateQueries(['users']);
+    },
+    onError: (error) => {
+      const message = error.response?.data?.detail || error.message || "Failed to delete user";
+      toast.error(message);
+    },
+  });
+};

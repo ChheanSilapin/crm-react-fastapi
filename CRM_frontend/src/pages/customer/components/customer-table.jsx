@@ -18,7 +18,7 @@ import {
 import { TablePagination } from "@/components/ui/pagination";
 
 import { CustomerFilters } from "./customer-filters";
-import { cn } from "@/lib/utils";
+import { cn, truncateWords } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { CustomerEditModal } from "./customer-edit-modal";
@@ -117,8 +117,8 @@ export function CustomerTable({
                   <TableCell className="text-muted-foreground max-w-sm truncate">
                     {customer.bank.bank_name}
                   </TableCell>
-                  <TableCell className="text-muted-foreground max-w-sm truncate">
-                    {customer.note ? customer.note : "-"}
+                  <TableCell className="text-muted-foreground max-w-sm">
+                    {truncateWords(customer.note ? customer.note : "-", 1)}
                   </TableCell>
 
                   <TableCell className="text-muted-foreground">

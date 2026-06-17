@@ -3,7 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { Toaster } from "@/components/ui/sonner";
 import AppLayout from "./components/Layout/AppLayout";
-import DashBoard from "./pages/Dashboard";
+import DashBoard from "./pages/dashboard/Dashboard";
 import Banks from "./pages/bank/Banks";
 import Login from "./pages/Login";
 import { ProtectedRoute } from "./components/ProtectedRoute";

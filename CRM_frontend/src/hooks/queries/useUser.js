@@ -9,3 +9,10 @@ export const useUsersQuery = ({ limit = 50, offset = 0 } = {}) => {
     placeholderData: keepPreviousData,
   });
 };
+
+export const useUserById = (id) => {
+  return useQuery({
+    queryKey: ["users", id],
+    queryFn: () => UserApi.getUser(id),
+  });
+};

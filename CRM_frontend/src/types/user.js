@@ -24,3 +24,9 @@ export const UserCreateSchema = z.object({
     password: z.string().min(1, "Password is required"),
     role_id: z.number("Role is required"),
 })
+
+export const UserUpdateSchema = z.object({
+    username: z.string().optional(),
+    role_id: z.number().optional(),
+    status: z.string().optional(),
+})

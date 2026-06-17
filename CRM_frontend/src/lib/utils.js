@@ -11,3 +11,10 @@ export const getImageUrl = (path) => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
     return `${baseUrl}${path}`;
 };
+
+export const truncateWords = (text, wordLimit = 10) => {
+  if (!text) return "";
+  const words = text.split(" ");
+  if (words.length <= wordLimit) return text;
+  return words.slice(0, wordLimit).join(" ") + "...";
+};

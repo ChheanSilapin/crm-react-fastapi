@@ -31,8 +31,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { TablePagination } from "@/components/ui/pagination";
 import { useState } from "react";
-import { UsersEditModal } from "./user-edit-modal";
-import { UserDeleteModal } from "./user-delete-modal";
+import { UsersEditModal } from "./role-edit-modal";
+import { UserDeleteModal } from "./role-delete-modal";
 
 const statusColors = {
   active: "bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200",
