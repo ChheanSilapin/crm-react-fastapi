@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 class Role(BaseModel):
+    id: int
     name: str
     description: str
     model_config = {"from_attributes": True}

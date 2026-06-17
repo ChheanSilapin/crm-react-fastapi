@@ -7,6 +7,7 @@ from app.core.security import get_password_hash
 from app.core.password_policy import validate_password, PasswordValidationError
 from app.modules.role.service import RoleService
 from app.modules.user.schema import UserUpdate, UserStatusUpdate, AdminUserCreate
+from app.models.customers import Customer
 import math
 class UserService:
     """Service layer for user business logic and validation."""
@@ -104,26 +105,18 @@ class UserService:
 
         return UserRepository.update(db, user)
 
-    @staticmethod
-    def update_user_status(db: Session, user_id: int, status_update: UserStatusUpdate) -> User:
-        user = UserRepository.get_by_id(db, user_id)
-        if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-        if status_update.status not in ["active", "inactive", "suspended"]:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid status. Must be 'active', 'inactive', or 'suspended'"
-            )
-
-        user.status = status_update.status
-        return UserRepository.update(db, user)
 
     @staticmethod
     def delete_user(db: Session, user_id: int) -> dict:
         user = UserRepository.get_by_id(db, user_id)
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        has_customers = db.query(Customer).filter(Customer.create_by_user == user.id).first()
+        if has_customers:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User cannot be deleted because it has associated customers."
+            )
 
         UserRepository.delete(db, user)
         return {"message": "User deleted successfully"}

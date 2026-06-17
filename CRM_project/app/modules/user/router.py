@@ -53,16 +53,6 @@ def delete_user(
     """Permanently delete a user account."""
     return UserService.delete_user(db, user_id)
 
-@router.patch("/users/{user_id}/status")
-def update_user_status(
-    user_id: int,
-    status_update: UserStatusUpdate,
-    db: Session = Depends(get_db),
-    _: bool = Depends(require_permissions(["users:update"])),
-):
-    """Update only the status of a user account."""
-    user = UserService.update_user_status(db, user_id, status_update)
-    return {"message": f"User status updated to {user.status}", "user_id": user.id}
 
 @router.get("/users/{user_id}/with-role", response_model=UserWithRole)
 def get_user_with_role(

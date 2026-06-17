@@ -135,7 +135,7 @@ class SecurityValidator:
 
         # Check for reserved words (only if not explicitly allowed)
         if not allow_reserved:
-            reserved_words = ["admin", "root", "system", "user", "test", "guest", "null", "undefined"]
+            reserved_words = ["system", "test", "guest", "null", "undefined"]
             if username.lower() in reserved_words:
                 raise InputValidationError("Username cannot be a reserved word")
 

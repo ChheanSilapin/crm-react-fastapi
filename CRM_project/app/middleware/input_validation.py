@@ -1,7 +1,8 @@
 """Input validation middleware for FastAPI."""
 import json
 from typing import Any, Dict
-from fastapi import Request, Response, HTTPException, status
+from fastapi import Request, Response, status
+from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from app.core.input_validation import SecurityValidator, InputValidationError
 
@@ -28,14 +29,20 @@ class InputValidationMiddleware(BaseHTTPMiddleware):
         if request.url.path in self.skip_validation_paths:
             return await call_next(request)
         
-        # Skip validation for GET requests (query params are handled separately)
-        if request.method == "GET":
-            await self._validate_query_params(request)
-            return await call_next(request)
-        
-        # Validate request body for POST, PUT, PATCH requests
-        if request.method in ["POST", "PUT", "PATCH"]:
-            await self._validate_request_body(request)
+        try:
+            # Skip validation for GET requests (query params are handled separately)
+            if request.method == "GET":
+                await self._validate_query_params(request)
+                return await call_next(request)
+            
+            # Validate request body for POST, PUT, PATCH requests
+            if request.method in ["POST", "PUT", "PATCH"]:
+                await self._validate_request_body(request)
+        except InputValidationError as e:
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"detail": str(e)}
+            )
         
         response = await call_next(request)
         return response
@@ -55,10 +62,7 @@ class InputValidationMiddleware(BaseHTTPMiddleware):
                         SecurityValidator.validate_search_query(value)
         
         except InputValidationError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid query parameter '{key}': {str(e)}"
-            )
+            raise InputValidationError(f"Invalid query parameter '{key}': {str(e)}")
     
     async def _validate_request_body(self, request: Request) -> None:
         """Validate request body content."""
@@ -95,10 +99,7 @@ class InputValidationMiddleware(BaseHTTPMiddleware):
                 pass
 
         except InputValidationError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid request data: {str(e)}"
-            )
+            raise InputValidationError(f"Invalid request data: {str(e)}")
     
     def _validate_json_data(self, data: Any, request_path: str = "") -> None:
         """Recursively validate JSON data."""
@@ -160,14 +161,14 @@ class RequestSizeMiddleware(BaseHTTPMiddleware):
             try:
                 content_length = int(content_length)
                 if content_length > self.max_request_size:
-                    raise HTTPException(
+                    return JSONResponse(
                         status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                        detail=f"Request size {content_length} exceeds maximum allowed size {self.max_request_size}"
+                        content={"detail": f"Request size {content_length} exceeds maximum allowed size {self.max_request_size}"}
                     )
             except ValueError:
-                raise HTTPException(
+                return JSONResponse(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Invalid Content-Length header"
+                    content={"detail": "Invalid Content-Length header"}
                 )
         
         response = await call_next(request)
@@ -181,9 +182,9 @@ class SecurityHeadersValidationMiddleware(BaseHTTPMiddleware):
         # Validate User-Agent header
         user_agent = request.headers.get("user-agent", "")
         if len(user_agent) > 500:
-            raise HTTPException(
+            return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User-Agent header too long"
+                content={"detail": "User-Agent header too long"}
             )
         
         # Check for suspicious patterns in headers
@@ -199,9 +200,9 @@ class SecurityHeadersValidationMiddleware(BaseHTTPMiddleware):
             if isinstance(header_value, str):
                 for pattern in suspicious_patterns:
                     if pattern.lower() in header_value.lower():
-                        raise HTTPException(
+                        return JSONResponse(
                             status_code=status.HTTP_400_BAD_REQUEST,
-                            detail=f"Suspicious content detected in header '{header_name}'"
+                            content={"detail": f"Suspicious content detected in header '{header_name}'"}
                         )
         
         response = await call_next(request)
