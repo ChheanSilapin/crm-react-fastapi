@@ -140,7 +140,7 @@ export function UsersEditModal({ open, onOpenChange, userId }) {
                       className="col-span-4 capitalize"
                       isControlled
                       items={
-                        roles?.map((role) => ({
+                        roles?.items?.map((role) => ({
                           label: role.name,
                           value: String(role.id),
                         })) || []

@@ -32,16 +32,19 @@ const data = {
       title: "Dashboard",
       url: "/",
       icon: <Home className="size-4" />,
+      permission: "dashboard:view",
     },
     {
       title: "Customers",
       url: "/customers",
       icon: <UsersIcon className="size-4" />,
+      permission: "customers:list",
     },
     {
       title: "Banks",
       url: "/banks",
       icon: <Landmark className="size-4" />,
+      permission: "banks:list",
     },
     {
       title: "Settings",
@@ -52,16 +55,19 @@ const data = {
           title: "Roles",
           url: "/roles",
           icon: <ShieldUser className="size-4" />,
+          permission: "roles:list",
         },
         {
           title: "Role Permissions",
           url: "/role-permissions",
           icon: <Lock className="size-4" />,
+          permission: "permissions:list",
         },
         {
           title: "Users",
           url: "/users",
           icon: <UsersIcon className="size-4" />,
+          permission: "users:list",
         },
       ],
     },
@@ -69,6 +75,7 @@ const data = {
 };
 
 import { useAuth } from "@/hooks/queries/useAuth";
+import { getImageUrl } from "@/lib/utils";
 
 export function AppSidebar({ ...props }) {
   const { data: userData, isLoading } = useAuth();
@@ -79,9 +86,26 @@ export function AppSidebar({ ...props }) {
         name: userData.username,
         role: userData.role?.name || "User",
         roleDescription: userData.role?.description || "",
-        avatar: "/avatars/shadcn.jpg",
+        avatar: getImageUrl(userData.avatar),
       }
     : data.user;
+
+  const hasAccess = (permission) => {
+    if (!permission) return true;
+    if (!userData?.permissions) return false;
+    if (userData.permissions.includes("system:admin")) return true;
+    return userData.permissions.includes(permission);
+  };
+
+  const filteredNavMain = data.navMain
+    .filter((item) => hasAccess(item.permission))
+    .map((item) => ({
+      ...item,
+      items: item.items
+        ? item.items.filter((subItem) => hasAccess(subItem.permission))
+        : undefined,
+    }))
+    .filter((item) => !item.items || item.items.length > 0);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -104,7 +128,7 @@ export function AppSidebar({ ...props }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={filteredNavMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={currentUser} isLoading={isLoading} />

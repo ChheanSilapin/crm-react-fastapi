@@ -1,4 +1,3 @@
-import { SelectDropdown } from "@/components/select-dropdown";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,21 +19,17 @@ import { Input } from "@/components/ui/input";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserCreateSchema } from "@/types/user";
-import { useRolesQuery } from "@/hooks/queries/useRole";
-import { useUserMutation } from "@/hooks/mutations/useUser";
 import { Loader2 } from "lucide-react";
-import { PasswordInput } from "@/components/password-input";
+import { RoleCreate } from "@/types/role";
+import { useRoleMutation } from "@/hooks/mutations/useRole";
 
-export function UsersAddModal({ open, onOpenChange }) {
-  const { data: roles } = useRolesQuery();
-  const { mutate, isPending } = useUserMutation();
+export function RoleAddModal({ open, onOpenChange }) {
+  const { mutate, isPending } = useRoleMutation();
   const form = useForm({
-    resolver: zodResolver(UserCreateSchema),
+    resolver: zodResolver(RoleCreate),
     defaultValues: {
-      username: "",
-      role_id: "",
-      password: "",
+      name: "",
+      description: "",
     },
   });
 
@@ -56,7 +51,7 @@ export function UsersAddModal({ open, onOpenChange }) {
     >
       <DialogContent className="sm:max-w-lg">
         <DialogHeader className="text-start">
-          <DialogTitle>Add New User</DialogTitle>
+          <DialogTitle>Add Role User</DialogTitle>
           <DialogDescription>
             {"Create new user here. "}
             Click save when you&apos;re done.
@@ -71,15 +66,15 @@ export function UsersAddModal({ open, onOpenChange }) {
             >
               <FormField
                 control={form.control}
-                name="username"
+                name="name"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
                     <FormLabel className="col-span-2 text-end">
-                      Username
+                      Role Name
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="john_doe"
+                        placeholder="role_name"
                         className="col-span-4"
                         {...field}
                       />
@@ -90,41 +85,19 @@ export function UsersAddModal({ open, onOpenChange }) {
               />
               <FormField
                 control={form.control}
-                name="password"
+                name="description"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
                     <FormLabel className="col-span-2 text-end">
-                      Password
+                      Description
                     </FormLabel>
                     <FormControl>
-                      <PasswordInput
-                        placeholder="e.g., S3cur3P@ssw0rd"
+                      <Input
+                        placeholder="write description..."
                         className="col-span-4"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="col-span-4 col-start-3" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="role_id"
-                render={({ field }) => (
-                  <FormItem className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
-                    <FormLabel className="col-span-2 text-end">Role</FormLabel>
-                    <SelectDropdown
-                      defaultValue={String(field.value)}
-                      onValueChange={(val) => field.onChange(Number(val))}
-                      placeholder="Select a role"
-                      className="col-span-4 capitalize"
-                      items={
-                        roles?.map((role) => ({
-                          label: role.name,
-                          value: String(role.id),
-                        })) || []
-                      }
-                    />
                     <FormMessage className="col-span-4 col-start-3" />
                   </FormItem>
                 )}

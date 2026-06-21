@@ -18,3 +18,17 @@ export const truncateWords = (text, wordLimit = 10) => {
   if (words.length <= wordLimit) return text;
   return words.slice(0, wordLimit).join(" ") + "...";
 };
+
+export const groupPermissions = (data) => Object.values(
+    data?.reduce((acc, curr) => {
+      const [resource, action] = curr.name.split(":");
+      if (!acc[resource]) {
+        acc[resource] = {
+          resource,
+          permissions: {},
+        };
+      }
+      acc[resource].permissions[action] = curr;
+      return acc;
+    }, {})
+  );

@@ -3,12 +3,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
-import { useUserDelete } from "@/hooks/mutations/useUser";
+import { useRoleDelete } from "@/hooks/mutations/useRole";
 import { ConfirmDialog } from "@/components/confirm-dailog";
 
-export function UserDeleteModal({ open, onOpenChange, user }) {
+export function RoleDeleteModal({ open, onOpenChange, role }) {
   const [value, setValue] = useState("");
-  const { mutate, isPending } = useUserDelete();
+  const { mutate, isPending } = useRoleDelete();
 
   // Reset input when modal opens/closes
   useEffect(() => {
@@ -17,9 +17,9 @@ export function UserDeleteModal({ open, onOpenChange, user }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (value !== user?.username) return;
+    if (value !== role?.name) return;
 
-    mutate(user.id, {
+    mutate(role.id, {
       onSuccess: () => {
         onOpenChange(false);
       },
@@ -30,9 +30,9 @@ export function UserDeleteModal({ open, onOpenChange, user }) {
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      form="user-delete-form"
+      form="role-delete-form"
       isLoading={isPending}
-      disabled={value !== user?.username}
+      disabled={value !== role?.name}
       className="sm:max-w-lg"
       title={
         <span className="flex items-center text-destructive">
@@ -40,32 +40,31 @@ export function UserDeleteModal({ open, onOpenChange, user }) {
             className="me-2 inline-block stroke-destructive"
             size={18}
           />
-          Delete User
+          Delete Role
         </span>
       }
       desc={
         <form
-          id="user-delete-form"
+          id="role-delete-form"
           className="space-y-4"
           onSubmit={handleSubmit}
         >
           <p className="mb-2">
             Are you sure you want to delete{" "}
-            <span className="font-bold">{user?.username}</span>?
+            <span className="font-bold">{role?.name}</span>?
             <br />
-            This action will permanently remove the user from the system. This
+            This action will permanently remove the role from the system. This
             cannot be undone.
           </p>
 
           <div className="space-y-2 my-4">
             <Label>
-              Type <span className="font-bold">{user?.username}</span> to
-              confirm:
+              Type <span className="font-bold">{role?.name}</span> to confirm:
             </Label>
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder="Enter bank name to confirm deletion"
+              placeholder="Enter role name to confirm deletion"
               autoFocus
               disabled={isPending}
             />

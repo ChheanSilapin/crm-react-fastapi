@@ -11,5 +11,19 @@ export const RoleSchema = z.object({
     updated_at: z.string()
 });
 
-export const RoleListSchema = z.array(RoleSchema);
+export const RoleListSchema = z.object({
+    items: z.array(RoleSchema),
+    total: z.number(),
+    limit: z.number(),
+    offset: z.number()
+});
+
+export const RoleCreate = z.object({
+    name: z.string(),
+    description: z.string()
+});
+
+export const RoleUpdate = RoleCreate.partial();
+
+
 

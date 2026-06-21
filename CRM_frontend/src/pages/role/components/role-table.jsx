@@ -27,20 +27,12 @@ import {
   PlusCircleIcon,
   Trash2,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { TablePagination } from "@/components/ui/pagination";
 import { useState } from "react";
-import { UsersEditModal } from "./role-edit-modal";
-import { UserDeleteModal } from "./role-delete-modal";
+import { RoleEditModal } from "./role-edit-modal";
+import { RoleDeleteModal } from "./role-delete-modal";
 
-const statusColors = {
-  active: "bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200",
-  inactive:
-    "bg-neutral-300/40 border-neutral-300 text-neutral-800 dark:text-neutral-300",
-};
-
-export function UserTable({
+export function RoleTable({
   data = [],
   isLoading,
   total,
@@ -48,13 +40,13 @@ export function UserTable({
   offset,
   onPaginationChange,
 }) {
-  const [editUserId, setEditUserId] = useState(null);
-  const [deleteUser, setDeleteUser] = useState(null);
+  const [editRoleId, setEditRoleId] = useState(null);
+  const [deleteRole, setDeleteRole] = useState(null);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
         <Input
-          placeholder="Filter users..."
+          placeholder="Filter roles..."
           className="h-8 w-[150px] lg:w-[250px]"
         />
 
@@ -143,9 +135,8 @@ export function UserTable({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
-              <TableHead>Username</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="w-[150px]">Role</TableHead>
+              <TableHead>Role Name</TableHead>
+              <TableHead>Description</TableHead>
               <TableHead>CreateAt</TableHead>
               <TableHead className="text-right w-[100px] pr-6">
                 Actions
@@ -159,7 +150,7 @@ export function UserTable({
                   colSpan={5}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  Loading users......
+                  Loading roles......
                 </TableCell>
               </TableRow>
             ) : data.length === 0 ? (
@@ -172,30 +163,18 @@ export function UserTable({
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.username}</TableCell>
-                  <TableCell className="text-muted-foreground max-w-sm truncate">
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "capitalize",
-                        statusColors[user.status?.toLowerCase()] ||
-                          "bg-neutral-100 text-neutral-800",
-                      )}
-                    >
-                      {user.status}
-                    </Badge>
-                  </TableCell>
+              data.map((role) => (
+                <TableRow key={role.id}>
+                  <TableCell className="font-medium">{role.name}</TableCell>
                   <TableCell className="text-muted-foreground max-w-sm truncate capitalize">
-                    {user.role.name}
+                    {role.description}
                   </TableCell>
 
                   <TableCell className="text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                       <CalendarIcon className="h-3.5 w-3.5" />
                       <span>
-                        {new Date(user.created_at).toLocaleDateString()}
+                        {new Date(role.created_at).toLocaleDateString()}
                       </span>
                     </div>
                   </TableCell>
@@ -206,7 +185,7 @@ export function UserTable({
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-foreground"
                       onClick={() => {
-                        setEditUserId(user.id);
+                        setEditRoleId(role.id);
                       }}
                     >
                       <FileEditIcon className="h-4 w-4" />
@@ -215,7 +194,7 @@ export function UserTable({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-red-500 hover:text-red-600"
-                      onClick={() => setDeleteUser(user)}
+                      onClick={() => setDeleteRole(role)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -232,22 +211,22 @@ export function UserTable({
         offset={offset}
         onPaginationChange={onPaginationChange}
       />
-      {editUserId && (
-        <UsersEditModal
-          open={!!editUserId}
+      {editRoleId && (
+        <RoleEditModal
+          open={!!editRoleId}
           onOpenChange={(open) => {
             if (!open) {
-              setEditUserId(null);
+              setEditRoleId(null);
             }
           }}
-          userId={editUserId}
+          roleId={editRoleId}
         />
       )}
 
-      <UserDeleteModal
-        open={!!deleteUser}
-        onOpenChange={(open) => !open && setDeleteUser(null)}
-        user={deleteUser}
+      <RoleDeleteModal
+        open={!!deleteRole}
+        onOpenChange={(open) => !open && setDeleteRole(null)}
+        role={deleteRole}
       />
     </div>
   );

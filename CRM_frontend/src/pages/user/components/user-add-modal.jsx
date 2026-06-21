@@ -119,7 +119,7 @@ export function UsersAddModal({ open, onOpenChange }) {
                       placeholder="Select a role"
                       className="col-span-4 capitalize"
                       items={
-                        roles?.map((role) => ({
+                        roles?.items?.map((role) => ({
                           label: role.name,
                           value: String(role.id),
                         })) || []
