@@ -123,8 +123,7 @@ class DatabaseSeeder:
                 
                 role = Role(
                     name=role_data["name"],
-                    description=role_data["description"],
-                    level=role_data["level"]
+                    description=role_data["description"]
                 )
                 self.db.add(role)
                 self.created_objects['roles'].append(role)
@@ -143,15 +142,6 @@ class DatabaseSeeder:
             role = role_map.get(role_data["name"])
             if not role:
                 continue
-            
-            # Set parent relationship
-            if role_data["name"] == "manager":
-                role.parent_id = role_map["admin"].id
-            elif role_data["name"] == "user":
-                role.parent_id = role_map["manager"].id
-            elif role_data["name"] == "viewer":
-                role.parent_id = role_map["user"].id
-            
             # Assign permissions
             for perm_name in role_data["permissions"]:
                 permission = permission_map.get(perm_name)
