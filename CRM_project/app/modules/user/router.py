@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.core.dependencies import require_permissions, require_role, get_current_user
@@ -43,6 +43,16 @@ def update_user(
 ):
     """Update user information."""
     return UserService.update_user(db, user_id, user_update)
+
+@router.put("/users/{user_id}/avatar", response_model=UserOut)
+def update_user_avatar(
+    user_id: int,
+    avatar: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    _: bool = Depends(require_permissions(["users:update"])),
+):
+    """Upload or update user avatar."""
+    return UserService.upload_avatar(db, user_id, avatar)
 
 @router.delete("/users/{user_id}")
 def delete_user(

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.role import Role
 from app.models.permission import Permission
 from app.models.associations import role_permissions
-
+from sqlalchemy import func, desc
 class RoleRepository:
     """Repository layer for role operations."""
     
@@ -20,6 +20,18 @@ class RoleRepository:
     @staticmethod
     def get_all(db: Session) -> List[Role]:
         return db.execute(select(Role)).scalars().all()
+
+    @staticmethod
+    def get_all_with_count(db:Session, offset:int=0, limit:int=10):
+        total = db.execute(select(func.count(Role.id))).scalar()
+        items = db.execute(
+            select(Role)
+            .order_by(desc(Role.created_at))
+            .offset(offset)
+            .limit(limit)
+        ).scalars().all()
+        
+        return items, total    
     
     @staticmethod
     def create(db: Session, name: str, description: Optional[str] = None) -> Role:

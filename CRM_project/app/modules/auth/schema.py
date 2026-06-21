@@ -65,10 +65,12 @@ class Role(BaseModel):
     name: str
     description: str
     model_config = {"from_attributes": True}
-    
+
 class UserResponse(BaseModel):
     id: int
     username: str
     role: Role | None = None
+    avatar: str | None = None
     status : str 
+    permissions: List[str] = Field(default_factory=list)
     model_config = {"from_attributes": True}

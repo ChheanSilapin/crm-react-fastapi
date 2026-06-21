@@ -25,6 +25,15 @@ class RoleOut(RoleBase):
     created_at: datetime
     updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
+class RoleResponse(BaseModel):
+    items:List[RoleOut] 
+    total: int
+    limit: int
+    offset: int
+    page: int
+    pages: int
+    has_next: bool
+    has_prev: bool
 
 class RoleWithPermissions(RoleOut):
     permissions: List[PermissionOut] = []

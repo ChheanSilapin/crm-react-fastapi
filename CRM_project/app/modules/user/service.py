@@ -1,5 +1,9 @@
+import os
+import shutil
+import uuid
+from pathlib import Path
 from typing import List
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, UploadFile
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.modules.user.repository import UserRepository
@@ -70,6 +74,7 @@ class UserService:
             )
 
         hashed_password = get_password_hash(user_data.password)
+
         new_user = User(
             username=user_data.username,
             password_hash=hashed_password,
@@ -105,7 +110,37 @@ class UserService:
 
         return UserRepository.update(db, user)
 
+    @staticmethod
+    def upload_avatar(db: Session, user_id: int, avatar_file: UploadFile) -> User:
+        user = UserRepository.get_by_id(db, user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
+        allowed_types = ["image/jpeg", "image/png", "image/svg+xml", "image/webp"]
+        if avatar_file.content_type not in allowed_types:
+            raise HTTPException(status_code=400, detail="Unsupported file type.")
+
+        # Delete old avatar
+        if user.avatar:
+            old_avatar_path = Path("app") / user.avatar.lstrip('/')
+            if old_avatar_path.exists() and old_avatar_path.is_file():
+                try:
+                    os.remove(old_avatar_path)
+                except OSError:
+                    pass
+
+        file_extension = avatar_file.filename.split(".")[-1]
+        unique_filename = f"{uuid.uuid4()}.{file_extension}"
+        upload_dir = Path("app/static/avatars")
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        
+        upload_path = upload_dir / unique_filename
+
+        with open(upload_path, "wb") as buffer:
+            shutil.copyfileobj(avatar_file.file, buffer)
+            
+        user.avatar = f"/static/avatars/{unique_filename}"
+        return UserRepository.update(db, user)
     @staticmethod
     def delete_user(db: Session, user_id: int) -> dict:
         user = UserRepository.get_by_id(db, user_id)

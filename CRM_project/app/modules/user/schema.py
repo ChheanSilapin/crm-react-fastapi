@@ -12,7 +12,7 @@ class UserBase(BaseModel):
     username: str
     status: str
     role: Role | None = None
-    
+    avatar: str | None = None
     model_config = {"from_attributes": True}
 
 class UserOut(UserBase):
@@ -34,6 +34,7 @@ class UserListResponse(BaseModel):
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     status: Optional[str] = None
+    avatar: Optional[str] = None
     role_id: Optional[int] = None
 
 class UserStatusUpdate(BaseModel):

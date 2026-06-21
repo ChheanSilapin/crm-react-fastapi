@@ -16,5 +16,4 @@ def list_permissions(
 ) -> List[PermissionOut]:
     """List all permissions. Requires permissions:read permission."""
     permissions = PermissionService.get_all(db)
-    print(f"Permissions: {permissions}")
     return permissions

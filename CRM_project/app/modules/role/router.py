@@ -7,19 +7,20 @@ from app.database import get_db
 from app.core.dependencies import require_permissions, require_role, get_current_user
 from app.modules.role.service import RoleService
 from app.models.permission import Permission
-from app.modules.role.schema import RoleCreate, RoleUpdate, RoleOut, PermissionOut, RolePermissionAssignment,RoleWithPermissions
+from app.modules.role.schema import RoleCreate, RoleUpdate, RoleResponse, PermissionOut, RolePermissionAssignment,RoleWithPermissions,RoleOut
 
 router = APIRouter()
 
 
-@router.get("/roles", response_model=List[RoleOut])
+@router.get("/roles", response_model=RoleResponse)
 def list_roles(
     db: Session = Depends(get_db),
+    offset: int = 0,
+    limit: int = 10,
     _: bool = Depends(require_permissions(["roles:read"])),
-) -> List[RoleOut]:
+):
     """List all roles. Requires roles:read permission."""
-    roles = RoleService.get_all(db)
-    return roles
+    return RoleService.get_all(db, offset=offset, limit=limit)
 
 
 @router.get("/roles/{role_id}", response_model=RoleWithPermissions)
@@ -37,7 +38,7 @@ def create_role(
     role_data: RoleCreate,
     db: Session = Depends(get_db),
     _: bool = Depends(require_permissions(["roles:create"])),
-) -> RoleOut:
+):
     return RoleService.create(db, role_data.name, role_data.description)
 
 
@@ -47,7 +48,7 @@ def update_role(
     role_data: RoleUpdate,
     db: Session = Depends(get_db),
     _: bool = Depends(require_permissions(["roles:update"])),
-) -> RoleOut:
+):
     return RoleService.update(
         db=db,
         role_id=role_id,

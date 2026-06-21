@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.role import Role
 from app.models.permission import Permission
 from app.modules.role.repository import RoleRepository
+import math
 
 class RoleService:
     """Service layer for role operations."""
@@ -25,9 +26,23 @@ class RoleService:
         return RoleRepository.get_by_name(db, name)
     
     @staticmethod
-    def get_all(db: Session) -> List[Role]:
+    def get_all(db: Session, offset: int = 0, limit: int = 10):
         """Get all roles."""
-        return RoleRepository.get_all(db)
+        items, total = RoleRepository.get_all_with_count(db, offset=offset, limit=limit)
+        
+        current_page = (offset // limit) + 1
+        total_pages = math.ceil(total / limit) if total > 0 else 1
+        
+        return {
+            "items": items,
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "page": current_page,
+            "pages": total_pages,
+            "has_next": current_page < total_pages,
+            "has_prev": current_page > 1
+        }
     
     @staticmethod
     def create(db: Session, name: str, description: Optional[str] = None) -> Role:
