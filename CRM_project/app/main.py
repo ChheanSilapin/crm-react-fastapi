@@ -26,6 +26,15 @@ async def lifespan(app: FastAPI):
     # Startup: Create tables (for demo; in prod use Alembic migrations)
     Base.metadata.create_all(bind=engine)
 
+    import os
+    if os.getenv("RUN_SEED_ON_STARTUP") == "true":
+        print("🌱 RUN_SEED_ON_STARTUP is true. Automatically seeding database...")
+        from app.seeds.seed import DatabaseSeeder
+        with DatabaseSeeder() as seeder:
+            # We don't clear data automatically for safety, but it will skip existing records
+            seeder.run_full_seed(clear_data=False)
+        print("✅ Startup seeding completed!")
+
     yield
     # Shutdown: cleanup if needed
     pass

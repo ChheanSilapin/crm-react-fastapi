@@ -67,11 +67,6 @@ class DataFactory:
             {"name": "customers:list", "description": "List all customers"},
             {"name": "customers:export", "description": "Export customer data"},
             
-            # Hierarchy Management Permissions
-            {"name": "hierarchy:read", "description": "View role hierarchy"},
-            {"name": "hierarchy:manage", "description": "Manage role hierarchy"},
-            {"name": "hierarchy:validate", "description": "Validate hierarchy integrity"},
-            
             # System Administration Permissions
             {"name": "system:admin", "description": "Full system administration access"},
             {"name": "system:audit", "description": "View audit logs and system information"},
@@ -94,8 +89,6 @@ class DataFactory:
             {
                 "name": "admin",
                 "description": "System Administrator with full access",
-                "parent_id": None,
-                "level": 0,
                 "permissions": [
                     "system:admin", "system:audit", "system:backup", "system:maintenance",
                     "users:create", "users:read", "users:update", "users:delete", "users:list", "users:status",
@@ -103,30 +96,24 @@ class DataFactory:
                     "permissions:create", "permissions:read", "permissions:update", "permissions:delete", "permissions:list", "permissions:assign",
                     "banks:create", "banks:read", "banks:update", "banks:delete", "banks:list",
                     "customers:create", "customers:read", "customers:update", "customers:delete", "customers:list", "customers:export",
-                    "hierarchy:read", "hierarchy:manage", "hierarchy:validate",
                     "dashboard:view", "reports:generate", "reports:export", "analytics:view"
                 ]
             },
             {
                 "name": "manager",
                 "description": "Manager with limited administrative access",
-                "parent_id": None,  # Will be set to admin's ID after creation
-                "level": 1,
                 "permissions": [
                     "users:read", "users:update", "users:list", "users:status",
                     "roles:read", "roles:list",
                     "permissions:read", "permissions:list",
                     "banks:create", "banks:read", "banks:update", "banks:list",
                     "customers:create", "customers:read", "customers:update", "customers:list", "customers:export",
-                    "hierarchy:read",
                     "dashboard:view", "reports:generate", "reports:export", "analytics:view"
                 ]
             },
             {
                 "name": "user",
                 "description": "Regular user with basic access",
-                "parent_id": None,  # Will be set to manager's ID after creation
-                "level": 2,
                 "permissions": [
                     "users:read",
                     "banks:read", "banks:list",
@@ -137,8 +124,6 @@ class DataFactory:
             {
                 "name": "viewer",
                 "description": "Read-only access user",
-                "parent_id": None,  # Will be set to user's ID after creation
-                "level": 3,
                 "permissions": [
                     "banks:read", "banks:list",
                     "customers:read", "customers:list",
@@ -159,7 +144,8 @@ class DataFactory:
             "username": "admin",
             "password_hash": DataFactory.hash_password("password123"),
             "role_name": "admin",
-            "status": "active"
+            "status": "active",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=admin"
         })
         
         # Create default manager user
@@ -167,7 +153,8 @@ class DataFactory:
             "username": "manager",
             "password_hash": DataFactory.hash_password("password123"),
             "role_name": "manager",
-            "status": "active"
+            "status": "active",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=manager"
         })
         
         # Create default regular user
@@ -175,7 +162,8 @@ class DataFactory:
             "username": "user",
             "password_hash": DataFactory.hash_password("password123"),
             "role_name": "user",
-            "status": "active"
+            "status": "active",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=user"
         })
         
         # Generate additional random users
@@ -191,40 +179,41 @@ class DataFactory:
                 "username": username[:50],  # Ensure it fits in the 50 char limit
                 "password_hash": DataFactory.hash_password("password123"),
                 "role_name": random.choice(role_names),
-                "status": random.choices(statuses, weights=[80, 15, 5])[0]  # 80% active, 15% inactive, 5% suspended
+                "status": random.choices(statuses, weights=[80, 15, 5])[0],  # 80% active, 15% inactive, 5% suspended
+                "avatar": f"https://api.dicebear.com/7.x/avataaars/svg?seed={username}"
             })
         
         return users
 
     @staticmethod
     def generate_banks(num_banks: int = 15) -> List[Dict[str, Any]]:
-        """Generate realistic bank data."""
+        """Generate realistic Cambodian bank data."""
         banks = []
 
-        # Real bank names for more realistic data
+        # Real Cambodian banks for more realistic data
         real_banks = [
-            {"name": "JPMorgan Chase Bank", "desc": "One of the largest banks in the United States"},
-            {"name": "Bank of America", "desc": "Major American multinational investment bank"},
-            {"name": "Wells Fargo Bank", "desc": "American multinational financial services company"},
-            {"name": "Citibank", "desc": "Consumer division of financial services multinational Citigroup"},
-            {"name": "U.S. Bank", "desc": "American bank holding company based in Minneapolis"},
-            {"name": "PNC Bank", "desc": "Major bank based in Pittsburgh, Pennsylvania"},
-            {"name": "Goldman Sachs Bank", "desc": "American multinational investment bank"},
-            {"name": "TD Bank", "desc": "American national bank and subsidiary of TD Bank Group"},
-            {"name": "Capital One Bank", "desc": "American bank holding company specializing in credit cards"},
-            {"name": "HSBC Bank USA", "desc": "American subsidiary of British multinational HSBC"},
-            {"name": "First National Bank", "desc": "Community bank serving local businesses and individuals"},
-            {"name": "Regional Trust Bank", "desc": "Regional bank focused on trust and wealth management"},
-            {"name": "Community Credit Union", "desc": "Member-owned financial cooperative"},
-            {"name": "Metro Savings Bank", "desc": "Local savings bank serving metropolitan area"},
-            {"name": "Heritage Financial Bank", "desc": "Family-owned bank with traditional values"}
+            {"name": "ABA Bank", "desc": "Advanced Bank of Asia Limited, a leading commercial bank in Cambodia"},
+            {"name": "ACLEDA Bank", "desc": "ACLEDA Bank Plc, the largest local commercial bank in Cambodia"},
+            {"name": "Canadia Bank", "desc": "Canadia Bank Plc, one of the oldest and largest local banks"},
+            {"name": "Campu Bank", "desc": "Cambodian Public Bank, a premier commercial bank"},
+            {"name": "Sathapana Bank", "desc": "Sathapana Bank Plc, a leading commercial bank in Cambodia"},
+            {"name": "FTB Bank", "desc": "Foreign Trade Bank of Cambodia, the first commercial bank in Cambodia"},
+            {"name": "BIDC Bank", "desc": "Bank for Investment and Development of Cambodia"},
+            {"name": "J Trust Royal Bank", "desc": "A major joint venture commercial bank"},
+            {"name": "Wing Bank", "desc": "Wing Bank (Cambodia) Plc, leading mobile banking service provider"},
+            {"name": "Vattanac Bank", "desc": "Vattanac Bank, a Cambodian-owned commercial bank"},
+            {"name": "Prince Bank", "desc": "Prince Bank Plc, offering comprehensive banking services"},
+            {"name": "SBI Ly Hour Bank", "desc": "SBI Ly Hour Bank Plc, offering retail and commercial banking"},
+            {"name": "Maybank Cambodia", "desc": "Maybank (Cambodia) Plc, subsidiary of Malaysia's largest bank"},
+            {"name": "BRED Bank", "desc": "BRED Bank Cambodia, European bank operating in Cambodia"},
+            {"name": "Shinhan Bank", "desc": "Shinhan Bank Cambodia, subsidiary of Shinhan Financial Group"}
         ]
 
         for i in range(min(num_banks, len(real_banks))):
             bank_data = real_banks[i]
             banks.append({
                 "bank_name": bank_data["name"],
-                "logo": f"https://example.com/logos/{bank_data['name'].lower().replace(' ', '_')}.png",
+                "logo": f"https://ui-avatars.com/api/?name={bank_data['name'].replace(' ', '+')}&background=random&color=fff&size=128",
                 "description": bank_data["desc"],
                 "created_by_user_name": "admin"  # Will be resolved to user ID later
             })
@@ -237,7 +226,7 @@ class DataFactory:
 
                 banks.append({
                     "bank_name": bank_name[:255],  # Ensure it fits in the 255 char limit
-                    "logo": f"https://example.com/logos/bank_{i+1}.png",
+                    "logo": f"https://ui-avatars.com/api/?name={bank_name.replace(' ', '+')}&background=random&color=fff&size=128",
                     "description": fake.catch_phrase()[:1000],  # Ensure it fits in description limit
                     "created_by_user_name": random.choice(["admin", "manager"])
                 })
@@ -257,7 +246,7 @@ class DataFactory:
 
         # Default values if not provided
         if bank_names is None:
-            bank_names = ["JPMorgan Chase Bank", "Bank of America", "Wells Fargo Bank"]
+            bank_names = ["ABA Bank", "ACLEDA Bank", "Canadia Bank"]
         if user_names is None:
             user_names = ["admin", "manager", "user"]
 
