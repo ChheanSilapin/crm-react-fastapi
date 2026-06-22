@@ -14,6 +14,7 @@ import { UnauthorisedError } from "./pages/UnauthorisedError";
 import { NavigationProgress } from "./components/navigation-progress";
 import Roles from "./pages/role/Roles";
 import Permissions from "./pages/permission/Permissions";
+import { InternalError } from "./pages/InternalError";
 
 function App() {
   return (
@@ -27,24 +28,38 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
                 <Route index path="/" element={<DashBoard />} />
-                
-                <Route element={<ProtectedRoute requiredPermission="banks:list" />}>
+
+                <Route
+                  element={<ProtectedRoute requiredPermission="banks:list" />}
+                >
                   <Route path="/banks" element={<Banks />} />
                 </Route>
 
-                <Route element={<ProtectedRoute requiredPermission="customers:list" />}>
+                <Route
+                  element={
+                    <ProtectedRoute requiredPermission="customers:list" />
+                  }
+                >
                   <Route path="/customers" element={<Customers />} />
                 </Route>
 
-                <Route element={<ProtectedRoute requiredPermission="users:list" />}>
+                <Route
+                  element={<ProtectedRoute requiredPermission="users:list" />}
+                >
                   <Route path="/users" element={<Users />} />
                 </Route>
 
-                <Route element={<ProtectedRoute requiredPermission="roles:list" />}>
+                <Route
+                  element={<ProtectedRoute requiredPermission="roles:list" />}
+                >
                   <Route path="/roles" element={<Roles />} />
                 </Route>
 
-                <Route element={<ProtectedRoute requiredPermission="permissions:list" />}>
+                <Route
+                  element={
+                    <ProtectedRoute requiredPermission="permissions:list" />
+                  }
+                >
                   <Route path="/role-permissions" element={<Permissions />} />
                 </Route>
 
@@ -55,6 +70,7 @@ function App() {
             </Route>
 
             <Route path="/login" element={<Login />} />
+            <Route path="/error" element={<InternalError />} />
           </Routes>
         </Router>
       </TooltipProvider>
