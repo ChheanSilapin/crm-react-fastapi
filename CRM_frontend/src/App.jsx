@@ -15,6 +15,7 @@ import { NavigationProgress } from "./components/navigation-progress";
 import Roles from "./pages/role/Roles";
 import Permissions from "./pages/permission/Permissions";
 import { InternalError } from "./pages/InternalError";
+import Profile from "./pages/profile/Profile";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
                 <Route index path="/" element={<DashBoard />} />
+                <Route path="/profile" element={<Profile />} />
 
                 <Route
                   element={<ProtectedRoute requiredPermission="banks:list" />}

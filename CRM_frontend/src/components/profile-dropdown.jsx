@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/queries/useAuth";
-import { getImageUrl } from "@/lib/utils";
 
 export function ProfileDropdown() {
   const { data: userData } = useAuth();
@@ -23,7 +22,7 @@ export function ProfileDropdown() {
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={getImageUrl(userData?.avatar)}
+                src={userData?.avatar}
                 alt={userData?.username}
               />
               <AvatarFallback>
@@ -46,7 +45,7 @@ export function ProfileDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link to="/settings">
+              <Link to="/profile">
                 Profile
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </Link>

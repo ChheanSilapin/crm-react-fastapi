@@ -45,3 +45,18 @@ export const useUserDelete = () => {
     },
   });
 };
+
+export const useUploadAvatarMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, file }) => UserApi.uploadAvatar(userId, file),
+    onSuccess: () => {
+      toast.success("Avatar updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update avatar");
+    },
+  });
+};
