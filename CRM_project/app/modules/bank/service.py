@@ -11,6 +11,7 @@ from app.models.user import User
 from app.models.customers import Customer
 from app.modules.bank.repository import BankRepository
 from app.modules.bank.schema import BankCreate, BankResponse
+from app.services.upload import UploadService
 
 class BankService:
     @staticmethod
@@ -21,18 +22,7 @@ class BankService:
 
         logo_url = None
         if logo:
-            allowed_types = ["image/jpeg", "image/png", "image/svg+xml", "image/webp"]
-            if logo.content_type not in allowed_types:
-                raise HTTPException(status_code=400, detail="Unsupported file type.")
-
-            file_extension = logo.filename.split(".")[-1]
-            unique_filename = f"{uuid.uuid4()}.{file_extension}"
-            upload_path = f"app/static/logos/{unique_filename}"
-
-            with open(upload_path, "wb") as buffer:
-                shutil.copyfileobj(logo.file, buffer)
-                
-            logo_url = f"/static/logos/{unique_filename}"
+            logo_url = UploadService.upload_image_to_s3(logo, folder="banks")
 
         new_bank = Bank(
             bank_name=bank_name,
@@ -75,27 +65,8 @@ class BankService:
             update_data["description"] = description
 
         if logo is not None:
-            # Delete old logo
-            if bank.logo:
-                old_logo_path = Path("app") / bank.logo.lstrip('/')
-                if old_logo_path.exists() and old_logo_path.is_file():
-                    try:
-                        os.remove(old_logo_path)
-                    except OSError:
-                        pass
-
-            allowed_types = ["image/jpeg", "image/png", "image/svg+xml", "image/webp"]
-            if logo.content_type not in allowed_types:
-                raise HTTPException(status_code=400, detail="Unsupported file type.")
-
-            file_extension = logo.filename.split(".")[-1]
-            filename = f"bank_{bank.bank_id}.{file_extension}"
-            upload_path = f"app/static/logos/{filename}"
-            
-            with open(upload_path, "wb") as buffer:
-                shutil.copyfileobj(logo.file, buffer)
-                
-            logo_url = f"/static/logos/{filename}"
+            # We skip local delete since it's on S3 now, or we'd delete from S3
+            logo_url = UploadService.upload_image_to_s3(logo, folder="banks")
             update_data["logo"] = logo_url
 
         return BankRepository.update_bank(db, bank, update_data)
@@ -115,13 +86,8 @@ class BankService:
                 detail="Bank cannot be deleted because it has associated customers."
             )
 
-        if bank.logo:
-            logo_path = Path("app") / bank.logo.lstrip('/')
-            if logo_path.exists() and logo_path.is_file():
-                try:
-                    os.remove(logo_path)
-                except OSError:
-                    pass
+        # Note: Depending on your AWS S3 bucket configuration, you might want to 
+        # add logic to delete the old logo from S3 here.
 
         response_data = {
             "bank_id": bank.bank_id,

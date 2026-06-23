@@ -13,6 +13,8 @@ from app.modules.role.service import RoleService
 from app.modules.user.schema import UserUpdate, UserStatusUpdate, AdminUserCreate
 from app.models.customers import Customer
 import math
+from app.services.upload import UploadService
+
 class UserService:
     """Service layer for user business logic and validation."""
 
@@ -116,30 +118,13 @@ class UserService:
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-        allowed_types = ["image/jpeg", "image/png", "image/svg+xml", "image/webp"]
-        if avatar_file.content_type not in allowed_types:
-            raise HTTPException(status_code=400, detail="Unsupported file type.")
-
-        # Delete old avatar
-        if user.avatar:
-            old_avatar_path = Path("app") / user.avatar.lstrip('/')
-            if old_avatar_path.exists() and old_avatar_path.is_file():
-                try:
-                    os.remove(old_avatar_path)
-                except OSError:
-                    pass
-
-        file_extension = avatar_file.filename.split(".")[-1]
-        unique_filename = f"{uuid.uuid4()}.{file_extension}"
-        upload_dir = Path("app/static/avatars")
-        upload_dir.mkdir(parents=True, exist_ok=True)
+        # The UploadService handles type validation, conversion to WebP, and S3 upload
+        avatar_url = UploadService.upload_image_to_s3(avatar_file, folder="avatars")
         
-        upload_path = upload_dir / unique_filename
-
-        with open(upload_path, "wb") as buffer:
-            shutil.copyfileobj(avatar_file.file, buffer)
+        # Note: Depending on your AWS S3 bucket configuration, you might want to 
+        # add logic to delete the old avatar from S3 if user.avatar is already set.
             
-        user.avatar = f"/static/avatars/{unique_filename}"
+        user.avatar = avatar_url
         return UserRepository.update(db, user)
     @staticmethod
     def delete_user(db: Session, user_id: int) -> dict:

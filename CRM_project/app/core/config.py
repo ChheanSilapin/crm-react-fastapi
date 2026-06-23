@@ -104,6 +104,12 @@ class Settings(BaseSettings):
     DB_PORT: int = Field(3306, env="DB_PORT")
     DB_NAME: str = Field(..., env="DB_DATABASE")
 
+    # AWS / S3 Configuration
+    AWS_ACCESS_KEY_ID: Optional[str] = Field(None, env="AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY: Optional[str] = Field(None, env="AWS_SECRET_ACCESS_KEY")
+    AWS_REGION: str = Field("us-east-1", env="AWS_REGION")
+    S3_BUCKET_NAME: Optional[str] = Field(None, env="S3_BUCKET_NAME")
+
     @property
     def is_production(self) -> bool:
         """Check if running in production environment."""
